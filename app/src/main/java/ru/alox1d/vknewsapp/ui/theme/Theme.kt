@@ -13,7 +13,8 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Black900,
     onPrimary = Color.White,
     onSecondary = Black500,
-    surfaceVariant = Black900
+    surfaceVariant = Black900,
+    primaryContainer = Black900, // FAB
 
 )
 
@@ -23,7 +24,9 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Color.White,
     onPrimary = Black900,
     onSecondary = Black500,
-    surfaceVariant = Color.White
+    surfaceVariant = Color.White,
+    primaryContainer = Color.White, // FAB
+
 )
 
 @Composable
