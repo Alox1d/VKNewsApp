@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">VK News App</string>
     <string name="template_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
+    <string name="navigation_item_home">Главная</string>
+    <string name="navigation_item_favorite">Избраноое</string>
+    <string name="navigation_item_profile">Профиль</string>
 </resources>
