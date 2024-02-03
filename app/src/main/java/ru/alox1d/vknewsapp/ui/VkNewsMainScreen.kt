@@ -1,5 +1,6 @@
 package ru.alox1d.vknewsapp.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -26,7 +28,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen() {
-    val snackBarHostState = SnackbarHostState()
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+    Log.d("MainScreen", snackBarHostState.currentSnackbarData.toString())
     val scope = rememberCoroutineScope()
     var fabIsVisible by rememberSaveable {
         mutableStateOf(true)
