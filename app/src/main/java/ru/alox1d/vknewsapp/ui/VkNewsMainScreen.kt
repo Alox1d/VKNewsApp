@@ -12,23 +12,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ru.alox1d.vknewsapp.MainViewModel
 import ru.alox1d.vknewsapp.domain.FeedPost
-import ru.alox1d.vknewsapp.domain.StatisticItem
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
-
-    var feedPost by remember {
-        mutableStateOf(FeedPost())
-    }
+fun MainScreen(viewModel: MainViewModel) {
 
     Scaffold(
         bottomBar = {
@@ -37,28 +33,16 @@ fun MainScreen() {
             }
         }
     ) {
+        val feedPost = viewModel.feedPost.observeAsState(FeedPost())
+
         PostCard(
             modifier = Modifier.padding(8.dp),
-            feedPost = feedPost,
+            feedPost = feedPost.value,
             onStatisticsItemClickListener = { newItem ->
-                feedPost = incrementOfStatisticItem(feedPost, newItem)
+                viewModel.updateCount(newItem)
             }
         )
     }
-}
-
-private fun incrementOfStatisticItem(feedPost: FeedPost, newItem: StatisticItem): FeedPost {
-    val oldStatistics = feedPost.statistics
-    val newStatistics = oldStatistics.toMutableList().apply {
-        replaceAll { oldItem ->
-            if (oldItem.type == newItem.type) {
-                oldItem.copy(count = oldItem.count + 1)
-            } else {
-                oldItem
-            }
-        }
-    }
-    return feedPost.copy(statistics = newStatistics)
 }
 
 @Composable
