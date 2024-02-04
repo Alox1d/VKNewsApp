@@ -1,6 +1,7 @@
 package ru.alox1d.vknewsapp.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,8 @@ import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
 @Composable
 fun PostCard(
     modifier: Modifier = Modifier,
-    feedPost: FeedPost
+    feedPost: FeedPost,
+    onStatisticsItemClickListener: (StatisticItem) -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -50,7 +52,10 @@ fun PostCard(
             Spacer(modifier = Modifier.height(8.dp))
             PostContent(feedPost)
             Spacer(modifier = Modifier.height(8.dp))
-            PostStatistics(statistics = feedPost.statistics)
+            PostStatistics(
+                statistics = feedPost.statistics,
+                onItemClickListener = onStatisticsItemClickListener
+            )
         }
     }
 }
@@ -110,25 +115,37 @@ private fun PostHeader(feedPost: FeedPost) {
 
 @Composable
 private fun PostStatistics(
-    statistics: List<StatisticItem>
+    statistics: List<StatisticItem>,
+    onItemClickListener: (StatisticItem) -> Unit
 ) {
     Row {
         Row(
             modifier = Modifier.weight(1f)
         ) {
             val viewsItem = statistics.getItemByType(StatisticType.VIEWS)
-            IconWithText(iconResId = R.drawable.ic_views_count, text = viewsItem.count.toString())
+            IconWithText(
+                iconResId = R.drawable.ic_views_count,
+                text = viewsItem.count.toString()
+            ) {
+                onItemClickListener(viewsItem)
+            }
         }
         Row(
             modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             val sharesItem = statistics.getItemByType(StatisticType.SHARES)
-            val likesItem = statistics.getItemByType(StatisticType.LIKES)
             val commentsItem = statistics.getItemByType(StatisticType.COMMENTS)
+            val likesItem = statistics.getItemByType(StatisticType.LIKES)
 
-            IconWithText(iconResId = R.drawable.ic_share, text = sharesItem.count.toString())
-            IconWithText(iconResId = R.drawable.ic_comment, text = commentsItem.count.toString())
-            IconWithText(iconResId = R.drawable.ic_like, text = likesItem.count.toString())
+            IconWithText(iconResId = R.drawable.ic_share, text = sharesItem.count.toString()) {
+                onItemClickListener(sharesItem)
+            }
+            IconWithText(iconResId = R.drawable.ic_comment, text = commentsItem.count.toString()) {
+                onItemClickListener(commentsItem)
+            }
+            IconWithText(iconResId = R.drawable.ic_like, text = likesItem.count.toString()) {
+                onItemClickListener(likesItem)
+            }
         }
     }
 }
@@ -140,9 +157,13 @@ private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticIte
 @Composable
 private fun IconWithText(
     iconResId: Int,
-    text: String
+    text: String,
+    onItemClickListener: () -> Unit
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.clickable(onClick = onItemClickListener),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
             painter = painterResource(id = iconResId),
             contentDescription = null,
@@ -160,7 +181,7 @@ private fun IconWithText(
 @Composable
 private fun PreviewLight() {
     VKNewsAppTheme(darkTheme = false) {
-        PostCard(feedPost = FeedPost())
+        PostCard(feedPost = FeedPost(), onStatisticsItemClickListener = {})
     }
 }
 
@@ -168,6 +189,6 @@ private fun PreviewLight() {
 @Composable
 private fun PreviewDark() {
     VKNewsAppTheme(darkTheme = true) {
-        PostCard(feedPost = FeedPost())
+        PostCard(feedPost = FeedPost(), onStatisticsItemClickListener = {})
     }
 }
