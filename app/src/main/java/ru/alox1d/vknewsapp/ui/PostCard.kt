@@ -25,46 +25,54 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.alox1d.vknewsapp.R
+import ru.alox1d.vknewsapp.domain.FeedPost
+import ru.alox1d.vknewsapp.domain.StatisticItem
+import ru.alox1d.vknewsapp.domain.StatisticType
 import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
 
 @Composable
-fun PostCard() {
+fun PostCard(
+    modifier: Modifier = Modifier,
+    feedPost: FeedPost
+) {
     Card(
+        modifier = modifier,
         elevation = CardDefaults.cardElevation(
             defaultElevation = 1.dp
         ),
         shape = RoundedCornerShape(4.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            PostHeader()
+            PostHeader(feedPost)
             Spacer(modifier = Modifier.height(8.dp))
-            PostContent()
+            PostContent(feedPost)
             Spacer(modifier = Modifier.height(8.dp))
-            PostStatistics()
+            PostStatistics(statistics = feedPost.statistics)
         }
     }
 }
 
 @Composable
-private fun PostContent() {
+private fun PostContent(feedPost: FeedPost) {
     Text(
-        text = stringResource(R.string.template_text)
+        text = feedPost.contextText
     )
     Spacer(modifier = Modifier.height(8.dp))
     Image(
-        modifier = Modifier.fillMaxWidth(),
-        painter = painterResource(id = R.drawable.post_content_image),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        painter = painterResource(id = feedPost.contentImageResId),
         contentDescription = null,
         contentScale = ContentScale.FillWidth
     )
 }
 
 @Composable
-private fun PostHeader() {
+private fun PostHeader(feedPost: FeedPost) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -74,7 +82,7 @@ private fun PostHeader() {
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
-            painter = painterResource(id = R.drawable.post_community_thumbnail),
+            painter = painterResource(id = feedPost.avatarResId),
             contentDescription = null
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -82,12 +90,12 @@ private fun PostHeader() {
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "/dev/null",
+                text = feedPost.communityName,
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "14:00",
+                text = feedPost.publicationDate,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
@@ -101,21 +109,32 @@ private fun PostHeader() {
 }
 
 @Composable
-private fun PostStatistics() {
+private fun PostStatistics(
+    statistics: List<StatisticItem>
+) {
     Row {
         Row(
             modifier = Modifier.weight(1f)
         ) {
-            IconWithText(iconResId = R.drawable.ic_views_count, text = "966")
+            val viewsItem = statistics.getItemByType(StatisticType.VIEWS)
+            IconWithText(iconResId = R.drawable.ic_views_count, text = viewsItem.count.toString())
         }
         Row(
             modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconWithText(iconResId = R.drawable.ic_share, text = "7")
-            IconWithText(iconResId = R.drawable.ic_comment, text = "966")
-            IconWithText(iconResId = R.drawable.ic_like, text = "966")
+            val sharesItem = statistics.getItemByType(StatisticType.SHARES)
+            val likesItem = statistics.getItemByType(StatisticType.LIKES)
+            val commentsItem = statistics.getItemByType(StatisticType.COMMENTS)
+
+            IconWithText(iconResId = R.drawable.ic_share, text = sharesItem.count.toString())
+            IconWithText(iconResId = R.drawable.ic_comment, text = commentsItem.count.toString())
+            IconWithText(iconResId = R.drawable.ic_like, text = likesItem.count.toString())
         }
     }
+}
+
+private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticItem {
+    return this.find { it.type == type } ?: throw IllegalStateException("StatisticType isn't found")
 }
 
 @Composable
@@ -141,7 +160,7 @@ private fun IconWithText(
 @Composable
 private fun PreviewLight() {
     VKNewsAppTheme(darkTheme = false) {
-        PostCard()
+        PostCard(feedPost = FeedPost())
     }
 }
 
@@ -149,6 +168,6 @@ private fun PreviewLight() {
 @Composable
 private fun PreviewDark() {
     VKNewsAppTheme(darkTheme = true) {
-        PostCard()
+        PostCard(feedPost = FeedPost())
     }
 }
