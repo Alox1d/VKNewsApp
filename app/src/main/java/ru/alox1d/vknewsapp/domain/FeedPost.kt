@@ -3,6 +3,7 @@ package ru.alox1d.vknewsapp.domain
 import ru.alox1d.vknewsapp.R
 
 data class FeedPost(
+    val id: Int = 0,
     val communityName: String = "/dev/null",
     val publicationDate: String = "14:00",
     val avatarResId: Int = R.drawable.post_community_thumbnail,
