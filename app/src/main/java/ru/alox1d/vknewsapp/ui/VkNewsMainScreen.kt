@@ -38,9 +38,10 @@ fun MainScreen(viewModel: MainViewModel) {
         PostCard(
             modifier = Modifier.padding(8.dp),
             feedPost = feedPost.value,
-            onStatisticsItemClickListener = { newItem ->
-                viewModel.updateCount(newItem)
-            }
+            onLikeClickListener = viewModel::updateCount,
+            onViewsClickListener = viewModel::updateCount,
+            onShareClickListener = viewModel::updateCount,
+            onCommentClickListener = viewModel::updateCount
         )
     }
 }

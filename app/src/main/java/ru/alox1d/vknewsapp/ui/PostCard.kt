@@ -38,7 +38,10 @@ import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
 fun PostCard(
     modifier: Modifier = Modifier,
     feedPost: FeedPost,
-    onStatisticsItemClickListener: (StatisticItem) -> Unit
+    onLikeClickListener: (StatisticItem) -> Unit,
+    onViewsClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
 ) {
     Card(
         modifier = modifier,
@@ -54,7 +57,10 @@ fun PostCard(
             Spacer(modifier = Modifier.height(8.dp))
             PostStatistics(
                 statistics = feedPost.statistics,
-                onItemClickListener = onStatisticsItemClickListener
+                onViewsClickListener = onViewsClickListener,
+                onShareClickListener = onShareClickListener,
+                onCommentClickListener = onCommentClickListener,
+                onLikeClickListener = onLikeClickListener
             )
         }
     }
@@ -116,7 +122,10 @@ private fun PostHeader(feedPost: FeedPost) {
 @Composable
 private fun PostStatistics(
     statistics: List<StatisticItem>,
-    onItemClickListener: (StatisticItem) -> Unit
+    onViewsClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
+    onLikeClickListener: (StatisticItem) -> Unit,
 ) {
     Row {
         Row(
@@ -127,7 +136,7 @@ private fun PostStatistics(
                 iconResId = R.drawable.ic_views_count,
                 text = viewsItem.count.toString()
             ) {
-                onItemClickListener(viewsItem)
+                onViewsClickListener(viewsItem)
             }
         }
         Row(
@@ -138,13 +147,13 @@ private fun PostStatistics(
             val likesItem = statistics.getItemByType(StatisticType.LIKES)
 
             IconWithText(iconResId = R.drawable.ic_share, text = sharesItem.count.toString()) {
-                onItemClickListener(sharesItem)
+                onShareClickListener(sharesItem)
             }
             IconWithText(iconResId = R.drawable.ic_comment, text = commentsItem.count.toString()) {
-                onItemClickListener(commentsItem)
+                onCommentClickListener(commentsItem)
             }
             IconWithText(iconResId = R.drawable.ic_like, text = likesItem.count.toString()) {
-                onItemClickListener(likesItem)
+                onLikeClickListener(likesItem)
             }
         }
     }
@@ -181,7 +190,11 @@ private fun IconWithText(
 @Composable
 private fun PreviewLight() {
     VKNewsAppTheme(darkTheme = false) {
-        PostCard(feedPost = FeedPost(), onStatisticsItemClickListener = {})
+        PostCard(feedPost = FeedPost(),
+            onLikeClickListener = {},
+            onViewsClickListener = {},
+            onShareClickListener = {},
+            onCommentClickListener = {})
     }
 }
 
@@ -189,6 +202,10 @@ private fun PreviewLight() {
 @Composable
 private fun PreviewDark() {
     VKNewsAppTheme(darkTheme = true) {
-        PostCard(feedPost = FeedPost(), onStatisticsItemClickListener = {})
+        PostCard(feedPost = FeedPost(),
+            onLikeClickListener = {},
+            onViewsClickListener = {},
+            onShareClickListener = {},
+            onCommentClickListener = {})
     }
 }
