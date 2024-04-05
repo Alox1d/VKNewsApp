@@ -11,39 +11,52 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import ru.alox1d.vknewsapp.MainViewModel
+import ru.alox1d.vknewsapp.ui.navigation.AppNavGraph
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
-    val selectedNavItem by viewModel.selectedNavItem.observeAsState(NavigationItem.Home)
+    val navHostController = rememberNavController()
 
     Scaffold(
         bottomBar = {
             NavigationBar {
-                BottomBar(viewModel, selectedNavItem)
+                BottomBar(navHostController)
             }
         }
     ) { paddingValues ->
-        when (selectedNavItem) {
-            // Проблемы:
-            // 1. Функции не кладутся в backstack
-            // 2. Их состояние не сохраняется: в TextCounter счётчик будет обнулён при переключении между вкладками
-            NavigationItem.Home -> HomeScreen(viewModel, paddingValues)
-            NavigationItem.Favorite -> TextCounter("Favorite")
-            NavigationItem.Profile -> TextCounter("Profile")
-        }
+        // Проблемы:
+        // 1. Функции не кладутся в backstack - сделано с помощью currentBackStackEntryAsState
+        // 2. Их состояние не сохраняется: в TextCounter счётчик будет обнулён при переключении между вкладками
+
+        AppNavGraph(
+            navHostController = navHostController,
+            homeScreenContent = {
+                HomeScreen(viewModel, paddingValues)
+            },
+            favoriteContent = {
+                TextCounter("Favorite")
+            },
+            profileContent = {
+                TextCounter("Profile")
+            }
+        )
     }
 }
 
 @Composable
-private fun RowScope.BottomBar(viewModel: MainViewModel, selectedNavItem: NavigationItem) {
+private fun RowScope.BottomBar(navHostController: NavHostController) {
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
         NavigationItem.Home,
         NavigationItem.Favorite,
@@ -52,8 +65,8 @@ private fun RowScope.BottomBar(viewModel: MainViewModel, selectedNavItem: Naviga
 
     items.forEach { item ->
         NavigationBarItem(
-            selected = selectedNavItem == item,
-            onClick = { viewModel.selectNavItem(item) },
+            selected = currentRoute == item.screen.route,
+            onClick = { navHostController.navigate(item.screen.route) },
             icon = {
                 Icon(imageVector = item.icon, contentDescription = null)
             },
