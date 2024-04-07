@@ -12,7 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.alox1d.vknewsapp.MainViewModel
 import ru.alox1d.vknewsapp.ui.navigation.AppNavGraph
+import ru.alox1d.vknewsapp.ui.navigation.Screen
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
@@ -35,8 +36,8 @@ fun MainScreen(viewModel: MainViewModel) {
         }
     ) { paddingValues ->
         // Проблемы:
-        // 1. Функции не кладутся в backstack - сделано с помощью currentBackStackEntryAsState
-        // 2. Их состояние не сохраняется: в TextCounter счётчик будет обнулён при переключении между вкладками
+        // 1. Экраны (composable-функции) не кладутся в backstack - решено с помощью currentBackStackEntryAsState
+        // 2. Их состояние не сохраняется: в TextCounter счётчик будет обнулён при переключении между вкладками - решено с помощью rememberSaveable
 
         AppNavGraph(
             navHostController = navHostController,
@@ -66,7 +67,17 @@ private fun RowScope.BottomBar(navHostController: NavHostController) {
     items.forEach { item ->
         NavigationBarItem(
             selected = currentRoute == item.screen.route,
-            onClick = { navHostController.navigate(item.screen.route) },
+            onClick = {
+                navHostController.navigate(item.screen.route) {
+                    launchSingleTop = true
+                    popUpTo(Screen.NewsFeed.route) {
+                        // НО при нажатии "назад" стейт текущего экрана сохранён всё равно не будет.
+                        // Это нормальное поведение, ведь мы с него осознанно ушли
+                        saveState = true
+                    }
+                    restoreState = true
+                }
+            },
             icon = {
                 Icon(imageVector = item.icon, contentDescription = null)
             },
@@ -86,7 +97,7 @@ private fun RowScope.BottomBar(navHostController: NavHostController) {
 
 @Composable
 private fun TextCounter(name: String) {
-    var count by remember {
+    var count by rememberSaveable {
         mutableIntStateOf(0)
     }
     Text(
