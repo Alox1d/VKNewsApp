@@ -17,21 +17,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import ru.alox1d.vknewsapp.MainViewModel
 import ru.alox1d.vknewsapp.ui.navigation.AppNavGraph
-import ru.alox1d.vknewsapp.ui.navigation.Screen
+import ru.alox1d.vknewsapp.ui.navigation.NavigationState
+import ru.alox1d.vknewsapp.ui.navigation.rememberNavigationState
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
-    val navHostController = rememberNavController()
+    val navigationState = rememberNavigationState()
 
     Scaffold(
         bottomBar = {
             NavigationBar {
-                BottomBar(navHostController)
+                BottomBar(navigationState)
             }
         }
     ) { paddingValues ->
@@ -40,7 +39,7 @@ fun MainScreen(viewModel: MainViewModel) {
         // 2. Их состояние не сохраняется: в TextCounter счётчик будет обнулён при переключении между вкладками - решено с помощью rememberSaveable
 
         AppNavGraph(
-            navHostController = navHostController,
+            navHostController = navigationState.navHostController,
             homeScreenContent = {
                 HomeScreen(viewModel, paddingValues)
             },
@@ -55,8 +54,8 @@ fun MainScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-private fun RowScope.BottomBar(navHostController: NavHostController) {
-    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+private fun RowScope.BottomBar(navigationState: NavigationState) {
+    val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
         NavigationItem.Home,
@@ -68,15 +67,7 @@ private fun RowScope.BottomBar(navHostController: NavHostController) {
         NavigationBarItem(
             selected = currentRoute == item.screen.route,
             onClick = {
-                navHostController.navigate(item.screen.route) {
-                    launchSingleTop = true
-                    popUpTo(Screen.NewsFeed.route) {
-                        // НО при нажатии "назад" стейт текущего экрана сохранён всё равно не будет.
-                        // Это нормальное поведение, ведь мы с него осознанно ушли
-                        saveState = true
-                    }
-                    restoreState = true
-                }
+                navigationState.navigateTo(item.screen.route)
             },
             icon = {
                 Icon(imageVector = item.icon, contentDescription = null)
