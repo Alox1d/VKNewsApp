@@ -1,5 +1,6 @@
 package ru.alox1d.vknewsapp.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
@@ -55,10 +56,18 @@ fun MainScreen() {
                         }
                     )
                 } else {
-                    CommentsScreen {
-                        commentsToPost.value = null
-                    }
+                    CommentsScreen(
+                        feedPost = commentsToPost.value!!,
+                        onBackPressed = {
+                            commentsToPost.value = null
+                        },
+                    )
                 }
+
+                // что делать при клике на кнопку "назад"
+                BackHandler(onBack = {
+                    commentsToPost.value = null
+                })
             },
             favoriteContent = {
                 TextCounter("Favorite")

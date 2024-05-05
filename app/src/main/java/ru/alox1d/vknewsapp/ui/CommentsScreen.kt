@@ -30,14 +30,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.alox1d.vknewsapp.CommentsViewModel
+import ru.alox1d.vknewsapp.CommentsViewModelFactory
+import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.PostComment
 import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
 
 @Composable
 fun CommentsScreen(
     onBackPressed: () -> Unit,
+    feedPost: FeedPost,
 ) {
-    val viewModel: CommentsViewModel = viewModel()
+    val viewModel: CommentsViewModel = viewModel(
+        factory = CommentsViewModelFactory(feedPost)
+    )
     val screenState = viewModel.screenState.observeAsState(CommentsScreenState.Initial)
 
     when (val currentState = screenState.value) {
@@ -57,7 +62,9 @@ private fun Comments(currentState: CommentsScreenState.Comments, onBackPressed: 
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = onBackPressed
+                        onClick = {
+                            onBackPressed()
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
