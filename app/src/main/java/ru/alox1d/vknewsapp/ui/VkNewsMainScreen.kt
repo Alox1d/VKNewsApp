@@ -21,11 +21,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.ui.navigation.AppNavGraph
 import ru.alox1d.vknewsapp.ui.navigation.NavigationState
-import ru.alox1d.vknewsapp.ui.navigation.Screen
 import ru.alox1d.vknewsapp.ui.navigation.rememberNavigationState
 
 @Composable
@@ -53,7 +53,7 @@ fun MainScreen() {
                     paddingValues = paddingValues,
                     onCommentsClick = {
                         commentsToPost.value = it
-                        navigationState.navigateTo(Screen.Comments.route)
+                        navigationState.navigateToComments()
                     }
                 )
             },
@@ -67,7 +67,7 @@ fun MainScreen() {
                 CommentsScreen(
                     feedPost = commentsToPost.value!!,
                     onBackPressed = {
-                        commentsToPost.value = null
+                        navigationState.navHostController.popBackStack()
                     },
                 )
 
@@ -83,7 +83,6 @@ fun MainScreen() {
 @Composable
 private fun RowScope.BottomBar(navigationState: NavigationState) {
     val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
         NavigationItem.Home,
         NavigationItem.Favorite,
@@ -91,10 +90,16 @@ private fun RowScope.BottomBar(navigationState: NavigationState) {
     )
 
     items.forEach { item ->
+        val selected = navBackStackEntry?.destination?.hierarchy?.any {
+            it.route == item.screen.route
+        } ?: false
+
         NavigationBarItem(
-            selected = currentRoute == item.screen.route,
+            selected = selected,
             onClick = {
-                navigationState.navigateTo(item.screen.route)
+                if (!selected) {
+                    navigationState.navigateTo(item.screen.route)
+                }
             },
             icon = {
                 Icon(imageVector = item.icon, contentDescription = null)
