@@ -25,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.ui.navigation.AppNavGraph
 import ru.alox1d.vknewsapp.ui.navigation.NavigationState
+import ru.alox1d.vknewsapp.ui.navigation.Screen
 import ru.alox1d.vknewsapp.ui.navigation.rememberNavigationState
 
 @Composable
@@ -47,33 +48,33 @@ fun MainScreen() {
 
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            homeScreenContent = {
-                if (commentsToPost.value == null) {
-                    HomeScreen(
-                        paddingValues = paddingValues,
-                        onCommentsClick = {
-                            commentsToPost.value = it
-                        }
-                    )
-                } else {
-                    CommentsScreen(
-                        feedPost = commentsToPost.value!!,
-                        onBackPressed = {
-                            commentsToPost.value = null
-                        },
-                    )
-                }
-
-                // что делать при клике на кнопку "назад"
-                BackHandler(onBack = {
-                    commentsToPost.value = null
-                })
+            newsFeedContent = {
+                HomeScreen(
+                    paddingValues = paddingValues,
+                    onCommentsClick = {
+                        commentsToPost.value = it
+                        navigationState.navigateTo(Screen.Comments.route)
+                    }
+                )
             },
             favoriteContent = {
                 TextCounter("Favorite")
             },
             profileContent = {
                 TextCounter("Profile")
+            },
+            commentsScreenContent = {
+                CommentsScreen(
+                    feedPost = commentsToPost.value!!,
+                    onBackPressed = {
+                        commentsToPost.value = null
+                    },
+                )
+
+                // что делать при клике на системную кнопку "назад"
+                BackHandler(onBack = {
+                    commentsToPost.value = null
+                })
             }
         )
     }
