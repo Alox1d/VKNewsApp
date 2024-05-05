@@ -41,7 +41,7 @@ fun PostCard(
     onLikeClickListener: (StatisticItem) -> Unit,
     onViewsClickListener: (StatisticItem) -> Unit,
     onShareClickListener: (StatisticItem) -> Unit,
-    onCommentClickListener: (StatisticItem) -> Unit,
+    onCommentsClickListener: (StatisticItem) -> Unit,
 ) {
     Card(
         modifier = modifier,
@@ -59,7 +59,7 @@ fun PostCard(
                 statistics = feedPost.statistics,
                 onViewsClickListener = onViewsClickListener,
                 onShareClickListener = onShareClickListener,
-                onCommentClickListener = onCommentClickListener,
+                onCommentClickListener = onCommentsClickListener,
                 onLikeClickListener = onLikeClickListener
             )
         }
@@ -194,7 +194,7 @@ private fun PreviewLight() {
             onLikeClickListener = {},
             onViewsClickListener = {},
             onShareClickListener = {},
-            onCommentClickListener = {})
+            onCommentsClickListener = {})
     }
 }
 
@@ -206,6 +206,6 @@ private fun PreviewDark() {
             onLikeClickListener = {},
             onViewsClickListener = {},
             onShareClickListener = {},
-            onCommentClickListener = {})
+            onCommentsClickListener = {})
     }
 }

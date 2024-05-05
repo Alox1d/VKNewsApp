@@ -22,27 +22,38 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.alox1d.vknewsapp.domain.FeedPost
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ru.alox1d.vknewsapp.CommentsViewModel
 import ru.alox1d.vknewsapp.domain.PostComment
 import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentsScreen(
-    feedPost: FeedPost,
-    comments: List<PostComment>,
     onBackPressed: () -> Unit,
 ) {
+    val viewModel: CommentsViewModel = viewModel()
+    val screenState = viewModel.screenState.observeAsState(CommentsScreenState.Initial)
+
+    when (val currentState = screenState.value) {
+        is CommentsScreenState.Comments -> Comments(currentState, onBackPressed)
+        CommentsScreenState.Initial -> Unit
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun Comments(currentState: CommentsScreenState.Comments, onBackPressed: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Comments for FeedPost Id: ${feedPost.id}")
+                    Text(text = "Comments for FeedPost Id: ${currentState.feedPost.id}")
                 },
                 navigationIcon = {
                     IconButton(
@@ -67,7 +78,7 @@ fun CommentsScreen(
             )
         ) {
             items(
-                items = comments,
+                items = currentState.comments,
                 key = { it.id }
             ) { comment ->
                 CommentItem(comment = comment)
