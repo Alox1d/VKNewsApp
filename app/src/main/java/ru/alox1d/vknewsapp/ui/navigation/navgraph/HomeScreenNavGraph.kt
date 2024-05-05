@@ -2,14 +2,12 @@ package ru.alox1d.vknewsapp.ui.navigation.navgraph
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.ui.navigation.Screen
-import ru.alox1d.vknewsapp.ui.navigation.Screen.Companion.KEY_CONTEXT_TEXT_ID
-import ru.alox1d.vknewsapp.ui.navigation.Screen.Companion.KEY_FEED_POST_ID
+import ru.alox1d.vknewsapp.ui.navigation.Screen.Companion.KEY_FEED_POST
 
 fun NavGraphBuilder.homeScreenNavGraph(
     newsFeedContent: @Composable () -> Unit,
@@ -25,23 +23,17 @@ fun NavGraphBuilder.homeScreenNavGraph(
         composable(
             route = Screen.Comments.route,
             arguments = listOf(
-                navArgument(KEY_FEED_POST_ID) {
-                    type = NavType.IntType
-                },
-                navArgument(KEY_CONTEXT_TEXT_ID) {
-                    type = NavType.StringType
+                navArgument(KEY_FEED_POST) {
+                    type = FeedPost.NavigationType
                 },
             ),
-        ) { // ROUTE_COMMENTS/{feed_post_id}
-            val feedPostId = it.arguments?.getInt(KEY_FEED_POST_ID) ?: 0
-            val feedPostContentText = it.arguments?.getString(KEY_CONTEXT_TEXT_ID) ?: ""
+        ) {
+            // OLD way by json (String) type:
+            // val feedPostJson = it.arguments?.getString(KEY_FEED_POST) ?: ""
+            // val feedPost = Gson().fromJson(feedPostJson, FeedPost::class.java)
+            val feedPost = it.arguments?.getParcelable<FeedPost>(KEY_FEED_POST) ?: throw RuntimeException("Args are null")
 
-            commentsScreenContent(
-                FeedPost(
-                    id = feedPostId,
-                    contextText = feedPostContentText
-                )
-            )
+            commentsScreenContent(feedPost)
         }
     }
 }

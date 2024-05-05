@@ -1,5 +1,7 @@
 package ru.alox1d.vknewsapp.ui.navigation
 
+import android.net.Uri
+import com.google.gson.Gson
 import ru.alox1d.vknewsapp.domain.FeedPost
 
 sealed class Screen(
@@ -14,21 +16,25 @@ sealed class Screen(
 
         private const val ROUTE_FOR_ARGS = "ROUTE_COMMENTS"
 
-        // ROUTE_COMMENTS/{feed_post_id}
+        // OLD: ROUTE_COMMENTS/{feed_post_id}
         fun getRouteWithArgs(feedPost: FeedPost): String {
-            return "$ROUTE_FOR_ARGS/${feedPost.id}/${feedPost.contextText}"
+            val feedPostJson = Gson().toJson(feedPost)
+            return "$ROUTE_FOR_ARGS/${feedPostJson.encode()}"
         }
     }
 
     companion object {
 
-        const val KEY_FEED_POST_ID = "feed_post_id"
-        const val KEY_CONTEXT_TEXT_ID = "context_text"
+        const val KEY_FEED_POST = "feed_post"
 
         const val ROUTE_HOME = "ROUTE_HOME"
-        const val ROUTE_COMMENTS = "ROUTE_COMMENTS/{$KEY_FEED_POST_ID}/{$KEY_CONTEXT_TEXT_ID}"
+        const val ROUTE_COMMENTS = "ROUTE_COMMENTS/{$KEY_FEED_POST}"
         const val ROUTE_NEWS_FEED = "ROUTE_NEWS_FEED"
         const val ROUTE_FAVORITE = "ROUTE_FAVORITE"
         const val ROUTE_PROFILE = "ROUTE_PROFILE"
     }
+}
+
+fun String.encode(): String {
+    return Uri.encode(this)
 }
