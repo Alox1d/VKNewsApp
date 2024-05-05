@@ -4,11 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.alox1d.vknewsapp.domain.FeedPost
+import ru.alox1d.vknewsapp.domain.PostComment
 import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.ui.HomeScreenState
-import java.util.Collections.replaceAll
 
 class MainViewModel : ViewModel() {
+
+    private val comments = mutableListOf<PostComment>().apply {
+        repeat(10) {
+            add(PostComment(id = it))
+        }
+    }
 
     private val initialList = mutableListOf<FeedPost>().apply {
         repeat(10) {
@@ -20,8 +26,25 @@ class MainViewModel : ViewModel() {
     private val _screenState = MutableLiveData<HomeScreenState>(initialState)
     val screenState: LiveData<HomeScreenState> = _screenState
 
+    private var savedState: HomeScreenState? = initialState
+
+    fun showComments(feedPost: FeedPost) {
+        savedState = _screenState.value
+        _screenState.value = HomeScreenState.Comments(
+            feedPost = feedPost,
+            comments = comments
+        )
+    }
+
+    fun closeComments() {
+        _screenState.value = savedState
+    }
+
     fun updateCount(feedPost: FeedPost, item: StatisticItem) {
-        val oldPosts = screenState.value?.toMutableList() ?: throw IllegalStateException("FeedPosts mustn't be null")
+        val currentState = screenState.value
+        if (currentState !is HomeScreenState.Posts) return
+
+        val oldPosts = currentState.posts.toMutableList()
         val oldStatistics = feedPost.statistics
         val newStatistics = oldStatistics.toMutableList().apply {
             replaceAll { oldItem ->
@@ -33,20 +56,24 @@ class MainViewModel : ViewModel() {
             }
         }
         val newFeedPost = feedPost.copy(statistics = newStatistics)
-        _screenState.value = oldPosts.apply {
+        val newPosts = oldPosts.apply {
             replaceAll {
-                if (feedPost.id == it.id) {
+                if (it.id == newFeedPost.id) {
                     newFeedPost
                 } else {
                     it
                 }
             }
         }
+        _screenState.value = HomeScreenState.Posts(posts = newPosts)
     }
 
     fun remove(feedPost: FeedPost) {
-        val oldPosts = screenState.value?.toMutableList() ?: throw IllegalStateException("FeedPosts mustn't be null")
+        val currentState = screenState.value
+        if (currentState !is HomeScreenState.Posts) return
+
+        val oldPosts = currentState.posts.toMutableList()
         oldPosts.remove(feedPost)
-        _screenState.value = oldPosts
+        _screenState.value = HomeScreenState.Posts(posts = oldPosts)
     }
 }

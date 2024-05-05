@@ -35,7 +35,8 @@ import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
 @Composable
 fun CommentsScreen(
     feedPost: FeedPost,
-    comments: List<PostComment>
+    comments: List<PostComment>,
+    onBackPressed: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -45,9 +46,7 @@ fun CommentsScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = {
-
-                        }
+                        onClick = onBackPressed
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,

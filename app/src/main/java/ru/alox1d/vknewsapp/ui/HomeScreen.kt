@@ -1,5 +1,6 @@
 package ru.alox1d.vknewsapp.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,8 +26,22 @@ fun HomeScreen(
     val screenState = viewModel.screenState.observeAsState(HomeScreenState.Initial)
 
     when (val currentState = screenState.value) {
-        is HomeScreenState.Comments -> CommentsScreen(feedPost = currentState.feedPost, comments = currentState.comments)
-        is HomeScreenState.Posts -> FeedPosts(posts = currentState.posts, viewModel = viewModel, paddingValues = paddingValues)
+        is HomeScreenState.Posts -> FeedPosts(
+            posts = currentState.posts,
+            viewModel = viewModel,
+            paddingValues = paddingValues
+        )
+
+        is HomeScreenState.Comments -> {
+            CommentsScreen(
+                feedPost = currentState.feedPost,
+                comments = currentState.comments,
+                onBackPressed = viewModel::closeComments
+            )
+            // что делать при клике на кнопку "назад"
+            BackHandler(onBack = viewModel::closeComments)
+        }
+
         HomeScreenState.Initial -> Unit // do nothing on init state
     }
 }
@@ -75,8 +90,8 @@ private fun FeedPosts(
                         onShareClickListener = { statisticItem ->
                             viewModel.updateCount(feedPost, statisticItem)
                         },
-                        onCommentClickListener = { statisticItem ->
-                            viewModel.updateCount(feedPost, statisticItem)
+                        onCommentClickListener = {
+                            viewModel.showComments(feedPost)
                         }
                     )
                 }
