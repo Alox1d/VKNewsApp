@@ -8,25 +8,25 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import ru.alox1d.vknewsapp.R
 import ru.alox1d.vknewsapp.ui.navigation.Screen
 
-sealed class NavigationItem(
+sealed class NavigationUiItem(
     val screen: Screen,
     val titleResId: Int,
     val icon: ImageVector
 ) {
 
-    data object Home : NavigationItem(
+    data object Home : NavigationUiItem(
         screen = Screen.Home,
         titleResId = R.string.navigation_item_home,
         icon = Icons.Outlined.Home,
     )
 
-    data object Favorite : NavigationItem(
+    data object Favorite : NavigationUiItem(
         screen = Screen.Favorite,
         titleResId = R.string.navigation_item_favorite,
         icon = Icons.Outlined.Favorite,
     )
 
-    data object Profile : NavigationItem(
+    data object Profile : NavigationUiItem(
         screen = Screen.Profile,
         titleResId = R.string.navigation_item_profile,
         icon = Icons.Outlined.Person

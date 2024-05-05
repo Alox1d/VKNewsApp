@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import ru.alox1d.vknewsapp.ui.navigation.AppNavGraph
 import ru.alox1d.vknewsapp.ui.navigation.NavigationState
+import ru.alox1d.vknewsapp.ui.navigation.navgraph.AppNavGraph
 import ru.alox1d.vknewsapp.ui.navigation.rememberNavigationState
 
 @Composable
@@ -74,9 +74,9 @@ fun MainScreen() {
 private fun RowScope.BottomBar(navigationState: NavigationState) {
     val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
     val items = listOf(
-        NavigationItem.Home,
-        NavigationItem.Favorite,
-        NavigationItem.Profile
+        NavigationUiItem.Home,
+        NavigationUiItem.Favorite,
+        NavigationUiItem.Profile
     )
 
     items.forEach { item ->

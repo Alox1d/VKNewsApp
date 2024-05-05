@@ -1,10 +1,11 @@
-package ru.alox1d.vknewsapp.ui.navigation
+package ru.alox1d.vknewsapp.ui.navigation.navgraph
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ru.alox1d.vknewsapp.domain.FeedPost
+import ru.alox1d.vknewsapp.ui.navigation.Screen
 
 @Composable
 fun AppNavGraph(
