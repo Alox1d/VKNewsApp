@@ -11,11 +11,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -23,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.ui.navigation.AppNavGraph
 import ru.alox1d.vknewsapp.ui.navigation.NavigationState
 import ru.alox1d.vknewsapp.ui.navigation.rememberNavigationState
@@ -31,9 +27,6 @@ import ru.alox1d.vknewsapp.ui.navigation.rememberNavigationState
 @Composable
 fun MainScreen() {
     val navigationState = rememberNavigationState()
-    val commentsToPost: MutableState<FeedPost?> = remember {
-        mutableStateOf(null)
-    }
 
     Scaffold(
         bottomBar = {
@@ -52,8 +45,7 @@ fun MainScreen() {
                 HomeScreen(
                     paddingValues = paddingValues,
                     onCommentsClick = {
-                        commentsToPost.value = it
-                        navigationState.navigateToComments()
+                        navigationState.navigateToComments(it)
                     }
                 )
             },
@@ -63,18 +55,16 @@ fun MainScreen() {
             profileContent = {
                 TextCounter("Profile")
             },
-            commentsScreenContent = {
+            commentsScreenContent = { feedPost ->
                 CommentsScreen(
-                    feedPost = commentsToPost.value!!,
-                    onBackPressed = {
-                        navigationState.navHostController.popBackStack()
-                    },
+                    feedPost = feedPost,
+                    onBackPressed = navigationState.navHostController::popBackStack,
                 )
 
                 // что делать при клике на системную кнопку "назад"
-                BackHandler(onBack = {
-                    commentsToPost.value = null
-                })
+                BackHandler(
+                    onBack = navigationState.navHostController::popBackStack
+                )
             }
         )
     }

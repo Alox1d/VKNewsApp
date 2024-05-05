@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import ru.alox1d.vknewsapp.domain.FeedPost
 
 class NavigationState(
     val navHostController: NavHostController,
@@ -26,8 +27,9 @@ class NavigationState(
         }
     }
 
-    fun navigateToComments() {
-        navHostController.navigate(Screen.Comments.route)
+    fun navigateToComments(feedPost: FeedPost) {
+        navHostController.navigate(Screen.Comments.getRouteWithArgs(feedPost)) // ROUTE_COMMENTS/{feed_post_id}
+        // other possible examples: ROUTE_COMMENTS/15/name_of_community, ROUTE_COMMENTS/{feed_post_id}/{name}/...
     }
 }
 
