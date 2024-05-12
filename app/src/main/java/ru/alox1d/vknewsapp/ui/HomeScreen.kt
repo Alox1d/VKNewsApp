@@ -1,22 +1,38 @@
 package ru.alox1d.vknewsapp.ui
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.vk.id.AccessToken
+import com.vk.id.onetap.common.OneTapOAuth
+import com.vk.id.onetap.common.OneTapStyle
+import com.vk.id.onetap.common.button.style.OneTapButtonCornersStyle
+import com.vk.id.onetap.compose.onetap.OneTap
 import ru.alox1d.vknewsapp.NewsFeedViewModel
 import ru.alox1d.vknewsapp.domain.FeedPost
+import ru.alox1d.vknewsapp.domain.getOneTapFailCallback
+import ru.alox1d.vknewsapp.domain.getOneTapSuccessCallback
 
 @Composable
 fun HomeScreen(
@@ -60,16 +76,16 @@ private fun FeedPosts(
         items(
             items = posts,
             key = { it.id }) { feedPost ->
-            val dismissState = rememberDismissState()
+            val dismissState = rememberSwipeToDismissBoxState()
 
-            if (dismissState.isDismissed(DismissDirection.EndToStart)) {
+            if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
                 viewModel.remove(feedPost)
             }
 
             SwipeToDismiss(
                 modifier = Modifier.animateItemPlacement(),
                 state = dismissState,
-                directions = setOf(DismissDirection.EndToStart),
+                directions = setOf(SwipeToDismissBoxValue.EndToStart),
                 background = {},
                 dismissContent = {
                     PostCard(
