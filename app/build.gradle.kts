@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-parcelize")
+    id("vkid.placeholders")
 }
 
 android {
@@ -70,4 +71,11 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("com.google.code.gson:gson:2.10.1")
+
+    coreLibraryDesugaring(libs.android.desugarJdkLibs)
+
+    // VK ID
+    implementation(libs.onetap.compose)
+    implementation(libs.vkid)
+
 }
