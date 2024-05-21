@@ -40,13 +40,16 @@ class MainVIewModel(private val application: Application) : AndroidViewModel(app
     private val preferencesKey = stringPreferencesKey(KEY)
 
     init {
+        checkAuth()
+    }
+
+    private fun checkAuth() {
         viewModelScope.launch {
             _authState.value = if (dataStore.data.first()[preferencesKey]?.isNotEmpty() == true) {
                 AuthState.Authorized
             } else {
                 AuthState.NotAuthorized
             }
-
         }
     }
 

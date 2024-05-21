@@ -70,11 +70,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation("com.google.code.gson:gson:2.10.1")
 
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
 
-    // VK ID
+    // VK ID SDK
     implementation(libs.onetap.compose)
     implementation(libs.vkid)
 
@@ -82,6 +81,13 @@ dependencies {
     implementation(libs.vk.sdk.core)
     implementation(libs.vk.sdk.api)
 
+    // datastore
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
+
+    // network
+    implementation(libs.logging.interceptor.v493)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+
 }
