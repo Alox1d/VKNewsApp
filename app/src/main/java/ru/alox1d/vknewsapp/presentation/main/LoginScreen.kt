@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme

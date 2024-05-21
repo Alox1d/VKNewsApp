@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui.theme
+package ru.alox1d.vknewsapp.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

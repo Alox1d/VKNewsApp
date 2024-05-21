@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.main
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
@@ -20,9 +20,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import ru.alox1d.vknewsapp.ui.navigation.NavigationState
-import ru.alox1d.vknewsapp.ui.navigation.navgraph.AppNavGraph
-import ru.alox1d.vknewsapp.ui.navigation.rememberNavigationState
+import ru.alox1d.vknewsapp.presentation.comments.CommentsScreen
+import ru.alox1d.vknewsapp.presentation.navigation.NavigationState
+import ru.alox1d.vknewsapp.presentation.navigation.navgraph.AppNavGraph
+import ru.alox1d.vknewsapp.presentation.navigation.rememberNavigationState
+import ru.alox1d.vknewsapp.presentation.news.NewsFeedScreen
 
 @Composable
 fun MainScreen() {
@@ -42,7 +44,7 @@ fun MainScreen() {
         AppNavGraph(
             navHostController = navigationState.navHostController,
             newsFeedContent = {
-                HomeScreen(
+                NewsFeedScreen(
                     paddingValues = paddingValues,
                     onCommentsClick = {
                         navigationState.navigateToComments(it)

@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.news
 
 import ru.alox1d.vknewsapp.domain.FeedPost
 

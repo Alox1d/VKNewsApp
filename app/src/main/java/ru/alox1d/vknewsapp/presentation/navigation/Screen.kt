@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui.navigation
+package ru.alox1d.vknewsapp.presentation.navigation
 
 import android.net.Uri
 import com.google.gson.Gson

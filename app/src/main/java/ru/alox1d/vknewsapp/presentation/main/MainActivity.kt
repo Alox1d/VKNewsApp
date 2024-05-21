@@ -1,14 +1,11 @@
-package ru.alox1d.vknewsapp
+package ru.alox1d.vknewsapp.presentation.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.alox1d.vknewsapp.ui.LoginScreen
-import ru.alox1d.vknewsapp.ui.MainScreen
-import ru.alox1d.vknewsapp.ui.MainVIewModel
-import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
+import ru.alox1d.vknewsapp.presentation.ui.theme.VKNewsAppTheme
 
 class MainActivity : ComponentActivity() {
 

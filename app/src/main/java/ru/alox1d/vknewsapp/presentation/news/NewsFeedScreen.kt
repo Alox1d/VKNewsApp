@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.news
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -16,11 +16,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.alox1d.vknewsapp.NewsFeedViewModel
 import ru.alox1d.vknewsapp.domain.FeedPost
 
 @Composable
-fun HomeScreen(
+fun NewsFeedScreen(
     paddingValues: PaddingValues,
     onCommentsClick: (FeedPost) -> Unit,
 ) {

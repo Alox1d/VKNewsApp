@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui.navigation
+package ru.alox1d.vknewsapp.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

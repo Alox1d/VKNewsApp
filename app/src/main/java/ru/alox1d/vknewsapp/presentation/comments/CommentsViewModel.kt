@@ -1,11 +1,10 @@
-package ru.alox1d.vknewsapp
+package ru.alox1d.vknewsapp.presentation.comments
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.PostComment
-import ru.alox1d.vknewsapp.ui.CommentsScreenState
 
 class CommentsViewModel(
     feedPost: FeedPost,

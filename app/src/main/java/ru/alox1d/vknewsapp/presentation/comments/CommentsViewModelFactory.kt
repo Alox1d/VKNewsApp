@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp
+package ru.alox1d.vknewsapp.presentation.comments
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

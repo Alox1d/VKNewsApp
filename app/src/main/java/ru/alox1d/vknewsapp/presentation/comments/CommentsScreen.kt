@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.comments
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -29,11 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.alox1d.vknewsapp.CommentsViewModel
-import ru.alox1d.vknewsapp.CommentsViewModelFactory
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.PostComment
-import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
+import ru.alox1d.vknewsapp.presentation.ui.theme.VKNewsAppTheme
 
 @Composable
 fun CommentsScreen(

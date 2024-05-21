@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.main
 
 import android.app.Application
 import android.content.Context
@@ -20,7 +20,6 @@ import com.vk.id.VKIDAuthFail
 import com.vk.id.onetap.common.OneTapOAuth
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import ru.alox1d.vknewsapp.AuthState
 import ru.alox1d.vknewsapp.domain.formatToken
 import java.security.KeyStore
 import javax.crypto.Cipher

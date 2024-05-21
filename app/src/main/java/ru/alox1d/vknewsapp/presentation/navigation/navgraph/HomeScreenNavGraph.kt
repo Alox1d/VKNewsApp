@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui.navigation.navgraph
+package ru.alox1d.vknewsapp.presentation.navigation.navgraph
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
@@ -6,8 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ru.alox1d.vknewsapp.domain.FeedPost
-import ru.alox1d.vknewsapp.ui.navigation.Screen
-import ru.alox1d.vknewsapp.ui.navigation.Screen.Companion.KEY_FEED_POST
+import ru.alox1d.vknewsapp.presentation.navigation.Screen
+import ru.alox1d.vknewsapp.presentation.navigation.Screen.Companion.KEY_FEED_POST
 
 fun NavGraphBuilder.homeScreenNavGraph(
     newsFeedContent: @Composable () -> Unit,

@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.main
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
@@ -6,7 +6,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import ru.alox1d.vknewsapp.R
-import ru.alox1d.vknewsapp.ui.navigation.Screen
+import ru.alox1d.vknewsapp.presentation.navigation.Screen
 
 sealed class NavigationUiItem(
     val screen: Screen,

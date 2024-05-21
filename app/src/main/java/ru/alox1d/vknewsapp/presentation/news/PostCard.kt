@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.ui
+package ru.alox1d.vknewsapp.presentation.news
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -32,7 +32,7 @@ import ru.alox1d.vknewsapp.R
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.domain.StatisticType
-import ru.alox1d.vknewsapp.ui.theme.VKNewsAppTheme
+import ru.alox1d.vknewsapp.presentation.ui.theme.VKNewsAppTheme
 
 @Composable
 fun PostCard(
