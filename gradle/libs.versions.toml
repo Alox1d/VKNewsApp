@@ -20,6 +20,8 @@ androidxTestJunitKtx = "1.1.5"
 andoridxUiTestJunit4 = "1.6.0"
 binary-compatibility-validator = "0.14.0"
 coil = "2.5.0"
+datastore = "1.1.1"
+datastorePreferences = "1.1.1"
 detekt = "1.23.5"
 dokka = "1.9.10"
 gson = "2.10.1"
@@ -66,6 +68,8 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintLayout" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigationCompose" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }

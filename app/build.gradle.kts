@@ -78,4 +78,10 @@ dependencies {
     implementation(libs.onetap.compose)
     implementation(libs.vkid)
 
+    // VK SDK
+    implementation(libs.vk.sdk.core)
+    implementation(libs.vk.sdk.api)
+
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.preferences)
 }
