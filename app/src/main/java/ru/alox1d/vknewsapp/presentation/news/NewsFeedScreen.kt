@@ -76,8 +76,8 @@ private fun FeedPosts(
                 dismissContent = {
                     PostCard(
                         feedPost = feedPost,
-                        onLikeClickListener = { statisticItem ->
-                            viewModel.updateCount(feedPost, statisticItem)
+                        onLikeClickListener = { _ ->
+                            viewModel.changeLikeStatus(feedPost)
                         },
                         onViewsClickListener = { statisticItem ->
                             viewModel.updateCount(feedPost, statisticItem)
@@ -88,7 +88,7 @@ private fun FeedPosts(
                         onCommentsClickListener = {
                             onCommentsClick(feedPost)
                         },
-                        isFavorite = feedPost.isFavorite
+                        isFavorite = feedPost.isLiked
                     )
                 }
             )

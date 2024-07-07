@@ -228,14 +228,15 @@ private fun PreviewLight() {
     VKNewsAppTheme(darkTheme = false) {
         PostCard(
             feedPost = FeedPost(
-                id = "nunc",
+                id = 123,
                 communityName = "Mamie Pickett",
                 publicationDate = "sociis",
                 communityImageUrl = "https://search.yahoo.com/search?p=fermentum",
                 contextText = "pro",
                 contentImageUrl = null,
                 statistics = listOf(),
-                isFavorite = true
+                isLiked = true,
+                communityId = 5681
             ),
             onLikeClickListener = {},
             onViewsClickListener = {},
@@ -252,14 +253,15 @@ private fun PreviewDark() {
     VKNewsAppTheme(darkTheme = true) {
         PostCard(
             feedPost = FeedPost(
-                id = "orci",
+                id = 123,
                 communityName = "Mauricio Leon",
                 publicationDate = "amet",
                 communityImageUrl = "https://search.yahoo.com/search?p=laudem",
                 contextText = "constituto",
                 contentImageUrl = null,
                 statistics = listOf(),
-                isFavorite = true
+                isLiked = true,
+                communityId = 5171
             ),
             onLikeClickListener = {},
             onViewsClickListener = {},

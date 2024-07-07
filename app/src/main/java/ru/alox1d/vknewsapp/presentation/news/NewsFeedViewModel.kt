@@ -5,16 +5,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
-import ru.alox1d.vknewsapp.data.network.ApiFactory
+import ru.alox1d.vknewsapp.data.repository.NewsFeedRepository
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.StatisticItem
-import ru.alox1d.vknewsapp.presentation.main.DataStore.preferencesKey
 import ru.alox1d.vknewsapp.presentation.main.appDataStore
 
 class NewsFeedViewModel(private val application: Application) : AndroidViewModel(application) {
+
+    private val repository = NewsFeedRepository(application)
 
     private val dataStore = application.applicationContext.appDataStore
 
@@ -29,14 +29,10 @@ class NewsFeedViewModel(private val application: Application) : AndroidViewModel
         loadRecommendations()
     }
 
-    private fun loadRecommendations() {
+    fun changeLikeStatus(feedPost: FeedPost) {
         viewModelScope.launch {
-            val token = dataStore.data.first()[preferencesKey] ?: return@launch
-
-            val response = ApiFactory.apiService.loadRecommendations(token)
-
-            val feedPosts = mapper.mapDtoToDomain(response)
-            _screenState.value = NewsFeedScreenState.Posts(feedPosts)
+            repository.changeLikeStatus(feedPost)
+            _screenState.value = NewsFeedScreenState.Posts(posts = repository.feedPosts)
         }
     }
 
@@ -75,5 +71,12 @@ class NewsFeedViewModel(private val application: Application) : AndroidViewModel
         val oldPosts = currentState.posts.toMutableList()
         oldPosts.remove(feedPost)
         _screenState.value = NewsFeedScreenState.Posts(posts = oldPosts)
+    }
+
+    private fun loadRecommendations() {
+        viewModelScope.launch {
+            val feedPosts = repository.loadRecommendations()
+            _screenState.value = NewsFeedScreenState.Posts(feedPosts)
+        }
     }
 }

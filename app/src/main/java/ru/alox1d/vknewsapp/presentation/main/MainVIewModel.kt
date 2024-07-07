@@ -18,7 +18,7 @@ import com.vk.id.onetap.common.OneTapOAuth
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.alox1d.vknewsapp.domain.formatToken
-import ru.alox1d.vknewsapp.presentation.main.DataStore.preferencesKey
+import ru.alox1d.vknewsapp.presentation.main.DataStore.prefsAccessTokenKey
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -42,7 +42,7 @@ class MainVIewModel(private val application: Application) : AndroidViewModel(app
 
     private fun checkAuth() {
         viewModelScope.launch {
-            val token = dataStore.data.first()[preferencesKey]
+            val token = dataStore.data.first()[prefsAccessTokenKey]
 
             Log.d(
                 "checkAuth",
@@ -62,7 +62,7 @@ class MainVIewModel(private val application: Application) : AndroidViewModel(app
         // Storing an access token
         viewModelScope.launch {
             dataStore.edit { prefs ->
-                prefs[preferencesKey] = at.token
+                prefs[prefsAccessTokenKey] = at.token
             }
         }
 

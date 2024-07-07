@@ -10,6 +10,6 @@ val Context.appDataStore: DataStore<Preferences> by preferencesDataStore("app")
 
 object DataStore {
 
-    private const val KEY = "key"
-    val preferencesKey = stringPreferencesKey(KEY)
+    private const val ACCESS_TOKEN_KEY = "key"
+    val prefsAccessTokenKey = stringPreferencesKey(ACCESS_TOKEN_KEY)
 }
