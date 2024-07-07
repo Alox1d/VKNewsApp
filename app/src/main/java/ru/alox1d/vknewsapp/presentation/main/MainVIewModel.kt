@@ -4,12 +4,9 @@ import android.app.Application
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Log
 import android.widget.Toast
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,6 +18,7 @@ import com.vk.id.onetap.common.OneTapOAuth
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.alox1d.vknewsapp.domain.formatToken
+import ru.alox1d.vknewsapp.presentation.main.DataStore.preferencesKey
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -35,9 +33,8 @@ class MainVIewModel(private val application: Application) : AndroidViewModel(app
     private var currentToast: Toast? = null
     private lateinit var iv: ByteArray
 
-    private val Context.appDataStore: DataStore<Preferences> by preferencesDataStore("app")
     private val dataStore = application.applicationContext.appDataStore
-    private val preferencesKey = stringPreferencesKey(KEY)
+
 
     init {
         checkAuth()
@@ -45,7 +42,13 @@ class MainVIewModel(private val application: Application) : AndroidViewModel(app
 
     private fun checkAuth() {
         viewModelScope.launch {
-            _authState.value = if (dataStore.data.first()[preferencesKey]?.isNotEmpty() == true) {
+            val token = dataStore.data.first()[preferencesKey]
+
+            Log.d(
+                "checkAuth",
+                "some secret: $token"
+            )
+            _authState.value = if (token?.isNotEmpty() == true) {
                 AuthState.Authorized
             } else {
                 AuthState.NotAuthorized
@@ -182,10 +185,5 @@ class MainVIewModel(private val application: Application) : AndroidViewModel(app
             Toast.LENGTH_SHORT
         )
         currentToast?.show()
-    }
-
-    private companion object {
-
-        const val KEY = "key"
     }
 }

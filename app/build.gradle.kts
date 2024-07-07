@@ -89,5 +89,5 @@ dependencies {
     implementation(libs.logging.interceptor.v493)
     implementation(libs.converter.gson)
     implementation(libs.gson)
-
+    implementation(libs.coil.compose.v210)
 }

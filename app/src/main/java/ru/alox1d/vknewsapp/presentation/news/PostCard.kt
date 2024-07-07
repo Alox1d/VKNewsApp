@@ -1,6 +1,5 @@
 package ru.alox1d.vknewsapp.presentation.news
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import ru.alox1d.vknewsapp.R
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.StatisticItem
@@ -72,11 +73,12 @@ private fun PostContent(feedPost: FeedPost) {
         text = feedPost.contextText
     )
     Spacer(modifier = Modifier.height(8.dp))
-    Image(
+    AsyncImage(
+        model = feedPost.contentImageUrl,
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
-        painter = painterResource(id = feedPost.contentImageResId),
+            .wrapContentHeight(),
+        // painter = painterResource(id = feedPost.contentImageUrl),
         contentDescription = null,
         contentScale = ContentScale.FillWidth
     )
@@ -89,11 +91,12 @@ private fun PostHeader(feedPost: FeedPost) {
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
+        AsyncImage(
+            model = feedPost.contentImageUrl,
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
-            painter = painterResource(id = feedPost.avatarResId),
+            // painter = painterResource(id = feedPost.communityImageUrl),
             contentDescription = null
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -140,19 +143,29 @@ private fun PostStatistics(
             }
         }
         Row(
-            modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             val sharesItem = statistics.getItemByType(StatisticType.SHARES)
             val commentsItem = statistics.getItemByType(StatisticType.COMMENTS)
             val likesItem = statistics.getItemByType(StatisticType.LIKES)
 
-            IconWithText(iconResId = R.drawable.ic_share, text = sharesItem.count.toString()) {
+            IconWithText(
+                iconResId = R.drawable.ic_share,
+                text = sharesItem.count.toString()
+            ) {
                 onShareClickListener(sharesItem)
             }
-            IconWithText(iconResId = R.drawable.ic_comment, text = commentsItem.count.toString()) {
+            IconWithText(
+                iconResId = R.drawable.ic_comment,
+                text = commentsItem.count.toString()
+            ) {
                 onCommentClickListener(commentsItem)
             }
-            IconWithText(iconResId = R.drawable.ic_like, text = likesItem.count.toString()) {
+            IconWithText(
+                iconResId = R.drawable.ic_like,
+                text = likesItem.count.toString()
+            ) {
                 onLikeClickListener(likesItem)
             }
         }
@@ -190,11 +203,19 @@ private fun IconWithText(
 @Composable
 private fun PreviewLight() {
     VKNewsAppTheme(darkTheme = false) {
-        PostCard(feedPost = FeedPost(),
-            onLikeClickListener = {},
-            onViewsClickListener = {},
-            onShareClickListener = {},
-            onCommentsClickListener = {})
+        PostCard(feedPost = FeedPost(
+            id = "nunc",
+            communityName = "Mamie Pickett",
+            publicationDate = "sociis",
+            communityImageUrl = "https://search.yahoo.com/search?p=fermentum",
+            contextText = "pro",
+            contentImageUrl = null,
+            statistics = listOf()
+        ),
+                 onLikeClickListener = {},
+                 onViewsClickListener = {},
+                 onShareClickListener = {},
+                 onCommentsClickListener = {})
     }
 }
 
@@ -202,10 +223,18 @@ private fun PreviewLight() {
 @Composable
 private fun PreviewDark() {
     VKNewsAppTheme(darkTheme = true) {
-        PostCard(feedPost = FeedPost(),
-            onLikeClickListener = {},
-            onViewsClickListener = {},
-            onShareClickListener = {},
-            onCommentsClickListener = {})
+        PostCard(feedPost = FeedPost(
+            id = "orci",
+            communityName = "Mauricio Leon",
+            publicationDate = "amet",
+            communityImageUrl = "https://search.yahoo.com/search?p=laudem",
+            contextText = "constituto",
+            contentImageUrl = null,
+            statistics = listOf()
+        ),
+                 onLikeClickListener = {},
+                 onViewsClickListener = {},
+                 onShareClickListener = {},
+                 onCommentsClickListener = {})
     }
 }

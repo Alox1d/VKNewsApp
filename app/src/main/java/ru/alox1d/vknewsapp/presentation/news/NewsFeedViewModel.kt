@@ -1,27 +1,44 @@
 package ru.alox1d.vknewsapp.presentation.news
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
+import ru.alox1d.vknewsapp.data.network.ApiFactory
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.StatisticItem
+import ru.alox1d.vknewsapp.presentation.main.DataStore.preferencesKey
+import ru.alox1d.vknewsapp.presentation.main.appDataStore
 
-class NewsFeedViewModel : ViewModel() {
+class NewsFeedViewModel(private val application: Application) : AndroidViewModel(application) {
 
-    private val initialList = mutableListOf<FeedPost>().apply {
-        repeat(10) {
-            add(
-                FeedPost(
-                    id = it,
-                    contextText = "Content $it",
-                )
-            )
-        }
-    }
-    private val initialState = NewsFeedScreenState.Posts(posts = initialList)
+    private val dataStore = application.applicationContext.appDataStore
+
+    private val initialState = NewsFeedScreenState.Initial
 
     private val _screenState = MutableLiveData<NewsFeedScreenState>(initialState)
     val screenState: LiveData<NewsFeedScreenState> = _screenState
+
+    private val mapper = NewsFeedMapper()
+
+    init {
+        loadRecommendations()
+    }
+
+    private fun loadRecommendations() {
+        viewModelScope.launch {
+            val token = dataStore.data.first()[preferencesKey] ?: return@launch
+
+            val response = ApiFactory.apiService.loadRecommendations(token)
+
+            val feedPosts = mapper.mapDtoToDomain(response)
+            _screenState.value = NewsFeedScreenState.Posts(feedPosts)
+        }
+    }
 
     fun updateCount(feedPost: FeedPost, item: StatisticItem) {
         val currentState = screenState.value
