@@ -87,7 +87,8 @@ private fun FeedPosts(
                         },
                         onCommentsClickListener = {
                             onCommentsClick(feedPost)
-                        }
+                        },
+                        isFavorite = feedPost.isFavorite
                     )
                 }
             )
