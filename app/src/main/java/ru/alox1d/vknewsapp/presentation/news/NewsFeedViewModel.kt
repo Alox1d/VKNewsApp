@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
 import ru.alox1d.vknewsapp.data.repository.NewsFeedRepository
 import ru.alox1d.vknewsapp.domain.FeedPost
-import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.presentation.main.appDataStore
 
 class NewsFeedViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -26,6 +25,7 @@ class NewsFeedViewModel(private val application: Application) : AndroidViewModel
     private val mapper = NewsFeedMapper()
 
     init {
+        _screenState.value = NewsFeedScreenState.Loading
         loadRecommendations()
     }
 
@@ -36,45 +36,11 @@ class NewsFeedViewModel(private val application: Application) : AndroidViewModel
         }
     }
 
-    fun updateCount(
-        feedPost: FeedPost,
-        item: StatisticItem
-    ) {
-        val currentState = screenState.value
-        if (currentState !is NewsFeedScreenState.Posts) return
-
-        val oldPosts = currentState.posts.toMutableList()
-        val oldStatistics = feedPost.statistics
-        val newStatistics = oldStatistics.toMutableList()
-            .apply {
-                replaceAll { oldItem ->
-                    if (oldItem.type == item.type) {
-                        oldItem.copy(count = oldItem.count + 1)
-                    } else {
-                        oldItem
-                    }
-                }
-            }
-        val newFeedPost = feedPost.copy(statistics = newStatistics)
-        val newPosts = oldPosts.apply {
-            replaceAll {
-                if (it.id == newFeedPost.id) {
-                    newFeedPost
-                } else {
-                    it
-                }
-            }
-        }
-        _screenState.value = NewsFeedScreenState.Posts(posts = newPosts)
-    }
-
     fun remove(feedPost: FeedPost) {
-        val currentState = screenState.value
-        if (currentState !is NewsFeedScreenState.Posts) return
-
-        val oldPosts = currentState.posts.toMutableList()
-        oldPosts.remove(feedPost)
-        _screenState.value = NewsFeedScreenState.Posts(posts = oldPosts)
+        viewModelScope.launch {
+            repository.deletePost(feedPost)
+            _screenState.value = NewsFeedScreenState.Posts(posts = repository.feedPosts)
+        }
     }
 
     fun loadNextRecommendations() {

@@ -41,8 +41,6 @@ fun PostCard(
     modifier: Modifier = Modifier,
     feedPost: FeedPost,
     onLikeClickListener: (StatisticItem) -> Unit,
-    onViewsClickListener: (StatisticItem) -> Unit,
-    onShareClickListener: (StatisticItem) -> Unit,
     onCommentsClickListener: (StatisticItem) -> Unit,
     isFavorite: Boolean,
 ) {
@@ -60,8 +58,6 @@ fun PostCard(
             Spacer(modifier = Modifier.height(8.dp))
             PostStatistics(
                 statistics = feedPost.statistics,
-                onViewsClickListener = onViewsClickListener,
-                onShareClickListener = onShareClickListener,
                 onCommentClickListener = onCommentsClickListener,
                 onLikeClickListener = onLikeClickListener,
                 isFavorite = isFavorite,
@@ -128,8 +124,6 @@ private fun PostHeader(feedPost: FeedPost) {
 @Composable
 private fun PostStatistics(
     statistics: List<StatisticItem>,
-    onViewsClickListener: (StatisticItem) -> Unit,
-    onShareClickListener: (StatisticItem) -> Unit,
     onCommentClickListener: (StatisticItem) -> Unit,
     onLikeClickListener: (StatisticItem) -> Unit,
     isFavorite: Boolean,
@@ -142,9 +136,7 @@ private fun PostStatistics(
             IconWithText(
                 iconResId = R.drawable.ic_views_count,
                 text = formatStatisticCount(viewsItem.count)
-            ) {
-                onViewsClickListener(viewsItem)
-            }
+            )
         }
         Row(
             modifier = Modifier.weight(1f),
@@ -157,9 +149,7 @@ private fun PostStatistics(
             IconWithText(
                 iconResId = R.drawable.ic_share,
                 text = formatStatisticCount(sharesItem.count)
-            ) {
-                onShareClickListener(sharesItem)
-            }
+            )
             IconWithText(
                 iconResId = R.drawable.ic_comment,
                 text = formatStatisticCount(commentsItem.count)
@@ -202,10 +192,15 @@ private fun IconWithText(
     iconResId: Int,
     text: String,
     tint: Color = MaterialTheme.colorScheme.onSecondary,
-    onItemClickListener: () -> Unit,
+    onItemClickListener: (() -> Unit)? = null,
 ) {
+    val modifier = if (onItemClickListener == null) {
+        Modifier
+    } else {
+        Modifier.clickable(onClick = onItemClickListener)
+    }
     Row(
-        modifier = Modifier.clickable(onClick = onItemClickListener),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -239,8 +234,6 @@ private fun PreviewLight() {
                 communityId = 5681
             ),
             onLikeClickListener = {},
-            onViewsClickListener = {},
-            onShareClickListener = {},
             onCommentsClickListener = {},
             isFavorite = false
         )
@@ -264,8 +257,6 @@ private fun PreviewDark() {
                 communityId = 5171
             ),
             onLikeClickListener = {},
-            onViewsClickListener = {},
-            onShareClickListener = {},
             onCommentsClickListener = {},
             isFavorite = false
         )

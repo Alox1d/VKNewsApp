@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -44,6 +45,14 @@ fun NewsFeedScreen(
             )
 
             NewsFeedScreenState.Initial -> Unit // do nothing on init state
+            NewsFeedScreenState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Blue)
+                }
+            }
         }
     }
 }
@@ -90,18 +99,6 @@ private fun FeedPosts(
                         feedPost = feedPost,
                         onLikeClickListener = { _ ->
                             viewModel.changeLikeStatus(feedPost)
-                        },
-                        onViewsClickListener = { statisticItem ->
-                            viewModel.updateCount(
-                                feedPost,
-                                statisticItem
-                            )
-                        },
-                        onShareClickListener = { statisticItem ->
-                            viewModel.updateCount(
-                                feedPost,
-                                statisticItem
-                            )
                         },
                         onCommentsClickListener = {
                             onCommentsClick(feedPost)
