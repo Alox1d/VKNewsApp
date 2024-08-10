@@ -4,6 +4,7 @@ import android.app.Application
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -88,13 +89,16 @@ class NewsFeedRepository(application: Application) {
         nextDataNeededEvents.emit(Unit)
     }
 
-    suspend fun getComments(feedPost: FeedPost): List<PostComment> {
+    fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow {
         val comments = apiService.getComments(
             accessToken = getAccessToken(),
             ownerId = feedPost.communityId,
             postId = feedPost.id
         )
-        return mapper.mapResponseToComments(comments)
+        emit(mapper.mapResponseToComments(comments))
+    }.retry {
+        delay(RETRY_TIMEOUT_MILLIS)
+        true
     }
 
     suspend fun changeLikeStatus(feedPost: FeedPost) {
