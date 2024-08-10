@@ -3,6 +3,7 @@ package ru.alox1d.vknewsapp.data.network
 import retrofit2.http.GET
 import retrofit2.http.Query
 import ru.alox1d.vknewsapp.data.model.NewsFeedResponseDto
+import ru.alox1d.vknewsapp.data.model.newsfeed.comments.CommentsResponseDto
 import ru.alox1d.vknewsapp.data.model.newsfeed.likes.LikesCountResponseDto
 
 interface ApiService {
@@ -38,6 +39,13 @@ interface ApiService {
         @Query("owner_id") ownerId: Long,
         @Query("item_id") postId: Long,
     ): NewsFeedResponseDto
+
+    @GET("wall.getComments?v=$API_VERSION&extended=1&fields=photo_100")
+    suspend fun getComments(
+        @Query("access_token") accessToken: String,
+        @Query("owner_id") ownerId: Long,
+        @Query("post_id") postId: Long
+    ): CommentsResponseDto
 
     private companion object {
 

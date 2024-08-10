@@ -17,6 +17,7 @@ import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
 import ru.alox1d.vknewsapp.data.network.ApiFactory
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.NewsFeedResult
+import ru.alox1d.vknewsapp.domain.PostComment
 import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.domain.StatisticType
 import ru.alox1d.vknewsapp.extensions.mergeWith
@@ -85,6 +86,15 @@ class NewsFeedRepository(application: Application) {
 
     suspend fun loadNextData() {
         nextDataNeededEvents.emit(Unit)
+    }
+
+    suspend fun getComments(feedPost: FeedPost): List<PostComment> {
+        val comments = apiService.getComments(
+            accessToken = getAccessToken(),
+            ownerId = feedPost.communityId,
+            postId = feedPost.id
+        )
+        return mapper.mapResponseToComments(comments)
     }
 
     suspend fun changeLikeStatus(feedPost: FeedPost) {

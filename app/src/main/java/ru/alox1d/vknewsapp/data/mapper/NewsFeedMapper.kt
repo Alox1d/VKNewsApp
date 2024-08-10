@@ -1,7 +1,9 @@
 package ru.alox1d.vknewsapp.data.mapper
 
 import ru.alox1d.vknewsapp.data.model.NewsFeedResponseDto
+import ru.alox1d.vknewsapp.data.model.newsfeed.comments.CommentsResponseDto
 import ru.alox1d.vknewsapp.domain.FeedPost
+import ru.alox1d.vknewsapp.domain.PostComment
 import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.domain.StatisticType
 import java.text.SimpleDateFormat
@@ -49,6 +51,26 @@ class NewsFeedMapper {
             result.add(feedPost)
         }
 
+        return result
+    }
+
+    fun mapResponseToComments(response: CommentsResponseDto): List<PostComment> {
+        val result = mutableListOf<PostComment>()
+        val comments = response.content.comments
+        val profiles = response.content.profiles
+        for (comment in comments) {
+            if (comment.text.isBlank()) continue
+
+            val author = profiles.firstOrNull { it.id == comment.authorId } ?: continue
+            val postComment = PostComment(
+                id = comment.id,
+                authorName = "${author.firstName} ${author.lastName}",
+                authorAvatarUrl = author.avatarUrl,
+                commentText = comment.text,
+                publicationDate = mapTimestampToDate(comment.date)
+            )
+            result.add(postComment)
+        }
         return result
     }
 
