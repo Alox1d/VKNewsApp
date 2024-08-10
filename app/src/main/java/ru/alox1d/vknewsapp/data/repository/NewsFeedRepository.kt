@@ -1,12 +1,20 @@
 package ru.alox1d.vknewsapp.data.repository
 
 import android.app.Application
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
 import ru.alox1d.vknewsapp.data.network.ApiFactory
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.domain.StatisticType
+import ru.alox1d.vknewsapp.extensions.mergeWith
 import ru.alox1d.vknewsapp.presentation.main.DataStore
 import ru.alox1d.vknewsapp.presentation.main.appDataStore
 
@@ -17,29 +25,54 @@ class NewsFeedRepository(application: Application) {
     private val mapper = NewsFeedMapper()
 
     private val _feedPosts = mutableListOf<FeedPost>()
-    val feedPosts: List<FeedPost>
+    private val feedPosts: List<FeedPost>
         get() = _feedPosts.toList()
 
     private var nextFrom: String? = null
 
-    suspend fun loadRecommendations(): List<FeedPost> {
-        val startFrom = nextFrom
+    private val coroutinesScope = CoroutineScope(Dispatchers.Default)
 
-        if (startFrom == null && feedPosts.isNotEmpty()) return feedPosts
+    // НЕ StateFlow, т.к. там distinctUntilChanged -> 1-ый эмит сработает,
+    // но последующие эмиты Unit не будут триггерить collect
+    private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
+    private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
+    private val loadedListFlow = flow {
+        nextDataNeededEvents.emit(Unit)
+        nextDataNeededEvents.collect {
+            val startFrom = nextFrom
 
-        val response = if (startFrom == null) {
-            apiService.loadRecommendations(getAccessToken())
-        } else {
-            apiService.loadRecommendations(
-                token = getAccessToken(),
-                startFrom = startFrom
-            )
+            if (startFrom == null && feedPosts.isNotEmpty()) {
+                emit(feedPosts)
+                return@collect
+            }
+
+            val response = if (startFrom == null) {
+                apiService.loadRecommendations(getAccessToken())
+            } else {
+                apiService.loadRecommendations(
+                    token = getAccessToken(),
+                    startFrom = startFrom
+                )
+            }
+            nextFrom = response.newsFeedContentDto.nextFrom
+            val posts = mapper.mapDtoToDomain(response)
+            _feedPosts.addAll(posts)
+
+            emit(feedPosts)
         }
-        nextFrom = response.newsFeedContentDto.nextFrom
-        val posts = mapper.mapDtoToDomain(response)
-        _feedPosts.addAll(posts)
+    }
 
-        return feedPosts
+    val recommendations: StateFlow<List<FeedPost>> =
+        loadedListFlow
+            .mergeWith(refreshedListFlow)
+            .stateIn(
+                scope = coroutinesScope,
+                started = SharingStarted.Lazily, // для того, чтобы при 1 подписке началась загрузка, и этот Флоу был всегда готов эмитить данные на протяжении всей работы приложения
+                initialValue = feedPosts
+            )
+
+    suspend fun loadNextData() {
+        nextDataNeededEvents.emit(Unit)
     }
 
     suspend fun changeLikeStatus(feedPost: FeedPost) {
@@ -73,6 +106,7 @@ class NewsFeedRepository(application: Application) {
         )
         val postIndex = _feedPosts.indexOf(feedPost)
         _feedPosts[postIndex] = newPost
+        refreshedListFlow.emit(feedPosts)
     }
 
     suspend fun deletePost(feedPost: FeedPost) {
@@ -82,6 +116,7 @@ class NewsFeedRepository(application: Application) {
             postId = feedPost.id,
         )
         _feedPosts.remove(feedPost)
+        refreshedListFlow.emit(feedPosts)
     }
 
     private suspend fun getAccessToken(): String {
