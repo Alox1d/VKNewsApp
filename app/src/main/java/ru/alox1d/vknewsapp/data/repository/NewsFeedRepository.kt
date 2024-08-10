@@ -3,15 +3,20 @@ package ru.alox1d.vknewsapp.data.repository
 import android.app.Application
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
 import ru.alox1d.vknewsapp.data.network.ApiFactory
 import ru.alox1d.vknewsapp.domain.FeedPost
+import ru.alox1d.vknewsapp.domain.NewsFeedResult
 import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.domain.StatisticType
 import ru.alox1d.vknewsapp.extensions.mergeWith
@@ -35,7 +40,7 @@ class NewsFeedRepository(application: Application) {
     // НЕ StateFlow, т.к. там distinctUntilChanged -> 1-ый эмит сработает,
     // но последующие эмиты Unit не будут триггерить collect
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
-    private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
+    private val refreshedListFlow = MutableSharedFlow<NewsFeedResult>()
     private val loadedListFlow = flow {
         nextDataNeededEvents.emit(Unit)
         nextDataNeededEvents.collect {
@@ -61,14 +66,21 @@ class NewsFeedRepository(application: Application) {
             emit(feedPosts)
         }
     }
+        .map { NewsFeedResult.Success(posts = it) as NewsFeedResult }
+        .retry {
+            delay(RETRY_TIMEOUT_MILLIS)
+            true
+        }.catch {
+            emit(NewsFeedResult.Error)
+    }
 
-    val recommendations: StateFlow<List<FeedPost>> =
+    val recommendations: StateFlow<NewsFeedResult> =
         loadedListFlow
             .mergeWith(refreshedListFlow)
             .stateIn(
                 scope = coroutinesScope,
                 started = SharingStarted.Lazily, // для того, чтобы при 1 подписке началась загрузка, и этот Флоу был всегда готов эмитить данные на протяжении всей работы приложения
-                initialValue = feedPosts
+                initialValue = NewsFeedResult.Success(feedPosts)
             )
 
     suspend fun loadNextData() {
@@ -106,7 +118,7 @@ class NewsFeedRepository(application: Application) {
         )
         val postIndex = _feedPosts.indexOf(feedPost)
         _feedPosts[postIndex] = newPost
-        refreshedListFlow.emit(feedPosts)
+        refreshedListFlow.emit(NewsFeedResult.Success(feedPosts))
     }
 
     suspend fun deletePost(feedPost: FeedPost) {
@@ -116,7 +128,7 @@ class NewsFeedRepository(application: Application) {
             postId = feedPost.id,
         )
         _feedPosts.remove(feedPost)
-        refreshedListFlow.emit(feedPosts)
+        refreshedListFlow.emit(NewsFeedResult.Success(feedPosts))
     }
 
     private suspend fun getAccessToken(): String {
@@ -124,4 +136,7 @@ class NewsFeedRepository(application: Application) {
             ?.get(DataStore.prefsAccessTokenKey) ?: throw IllegalStateException("AT is null")
     }
 
+    companion object {
+        private const val RETRY_TIMEOUT_MILLIS = 3000L
+    }
 }
