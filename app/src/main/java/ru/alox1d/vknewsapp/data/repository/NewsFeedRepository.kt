@@ -1,6 +1,8 @@
 package ru.alox1d.vknewsapp.data.repository
 
 import android.app.Application
+import android.util.Log
+import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -16,20 +18,21 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
 import ru.alox1d.vknewsapp.data.network.ApiFactory
+import ru.alox1d.vknewsapp.domain.AuthState
 import ru.alox1d.vknewsapp.domain.FeedPost
 import ru.alox1d.vknewsapp.domain.NewsFeedResult
 import ru.alox1d.vknewsapp.domain.PostComment
 import ru.alox1d.vknewsapp.domain.StatisticItem
 import ru.alox1d.vknewsapp.domain.StatisticType
 import ru.alox1d.vknewsapp.extensions.mergeWith
-import ru.alox1d.vknewsapp.presentation.main.DataStore
+import ru.alox1d.vknewsapp.presentation.main.DataStore.prefsAccessTokenKey
 import ru.alox1d.vknewsapp.presentation.main.appDataStore
 
 class NewsFeedRepository(application: Application) {
-
     private val dataStore = application.applicationContext.appDataStore
     private val apiService = ApiFactory.apiService
     private val mapper = NewsFeedMapper()
+    private val coroutinesScope = CoroutineScope(Dispatchers.Default)
 
     private val _feedPosts = mutableListOf<FeedPost>()
     private val feedPosts: List<FeedPost>
@@ -37,7 +40,28 @@ class NewsFeedRepository(application: Application) {
 
     private var nextFrom: String? = null
 
-    private val coroutinesScope = CoroutineScope(Dispatchers.Default)
+    private val checkAuthStateEvents = MutableSharedFlow<Unit>(replay = 1)
+    val authStateFlow = flow {
+        checkAuthStateEvents.emit(Unit) // чтобы отработал 1-ый эмит
+        checkAuthStateEvents.collect {
+            val token = getAccessToken()
+
+            Log.d(
+                "checkAuth",
+                "some secret: $token"
+            )
+            val state = if (token.isNotEmpty()) {
+                AuthState.Authorized
+            } else {
+                AuthState.NotAuthorized
+            }
+            emit(state)
+        }
+    }.stateIn(
+        scope = coroutinesScope,
+        started = SharingStarted.Lazily,
+        initialValue = AuthState.Initial
+    )
 
     // НЕ StateFlow, т.к. там distinctUntilChanged -> 1-ый эмит сработает,
     // но последующие эмиты Unit не будут триггерить collect
@@ -74,7 +98,7 @@ class NewsFeedRepository(application: Application) {
             true
         }.catch {
             emit(NewsFeedResult.Error)
-    }
+        }
 
     val recommendations: StateFlow<NewsFeedResult> =
         loadedListFlow
@@ -147,7 +171,21 @@ class NewsFeedRepository(application: Application) {
 
     private suspend fun getAccessToken(): String {
         return dataStore.data.firstOrNull()
-            ?.get(DataStore.prefsAccessTokenKey) ?: throw IllegalStateException("AT is null")
+            ?.get(prefsAccessTokenKey) ?: throw IllegalStateException("AT is null")
+    }
+
+    suspend fun onLoginSuccess(token: String) {
+        dataStore.edit { prefs ->
+            prefs[prefsAccessTokenKey] = token
+        }
+        checkAuthStateEvents.emit(Unit)
+    }
+
+    suspend fun onLoginError() {
+        dataStore.edit { prefs ->
+            prefs[prefsAccessTokenKey] = ""
+        }
+        checkAuthStateEvents.emit(Unit)
     }
 
     companion object {

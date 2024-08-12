@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.presentation.main
+package ru.alox1d.vknewsapp.domain
 
 sealed class AuthState {
     data object Authorized : AuthState()
