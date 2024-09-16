@@ -2,10 +2,10 @@ package ru.alox1d.vknewsapp.data.mapper
 
 import ru.alox1d.vknewsapp.data.model.NewsFeedResponseDto
 import ru.alox1d.vknewsapp.data.model.newsfeed.comments.CommentsResponseDto
-import ru.alox1d.vknewsapp.domain.FeedPost
-import ru.alox1d.vknewsapp.domain.PostComment
-import ru.alox1d.vknewsapp.domain.StatisticItem
-import ru.alox1d.vknewsapp.domain.StatisticType
+import ru.alox1d.vknewsapp.domain.entity.FeedPost
+import ru.alox1d.vknewsapp.domain.entity.PostComment
+import ru.alox1d.vknewsapp.domain.entity.StatisticItem
+import ru.alox1d.vknewsapp.domain.entity.StatisticType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

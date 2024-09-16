@@ -11,22 +11,27 @@ import com.vk.id.VKIDAuthFail
 import com.vk.id.onetap.common.OneTapOAuth
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.alox1d.vknewsapp.data.repository.NewsFeedRepository
-import ru.alox1d.vknewsapp.domain.AuthState
+import ru.alox1d.vknewsapp.data.repository.NewsFeedRepositoryImpl
+import ru.alox1d.vknewsapp.domain.entity.AuthState
 import ru.alox1d.vknewsapp.domain.formatToken
+import ru.alox1d.vknewsapp.domain.usecases.GetAuthStateFlowUseCase
+import ru.alox1d.vknewsapp.domain.usecases.UpdateAuthStateFlowUseCase
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
 
-    private val repository = NewsFeedRepository(application)
+    private val repository = NewsFeedRepositoryImpl(application)
 
-    val authState: StateFlow<AuthState> = repository.authStateFlow
+    private val getAuthStateFlowUseCase = GetAuthStateFlowUseCase(repository)
+    private val updateAuthStateFlowUseCase = UpdateAuthStateFlowUseCase(repository)
+
+    val authState: StateFlow<AuthState> = getAuthStateFlowUseCase.invoke()
 
     private var currentToast: Toast? = null
 
     fun onLoginSuccess(): (OneTapOAuth?, AccessToken) -> Unit = { oAuth, at ->
         // Storing an access token
         viewModelScope.launch {
-            repository.onLoginSuccess(at.token)
+            updateAuthStateFlowUseCase.invoke(at.token)
         }
 
         onVKIDAuthSuccess(
@@ -38,7 +43,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     fun onLoginError(): (OneTapOAuth?, VKIDAuthFail) -> Unit = { oAuth, fail ->
         viewModelScope.launch {
-            repository.onLoginError()
+            updateAuthStateFlowUseCase.invoke(null)
         }
 
         onVKIDAuthFail(

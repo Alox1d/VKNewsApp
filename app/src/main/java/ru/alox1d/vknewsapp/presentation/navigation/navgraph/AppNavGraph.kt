@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import ru.alox1d.vknewsapp.domain.FeedPost
+import ru.alox1d.vknewsapp.domain.entity.FeedPost
 import ru.alox1d.vknewsapp.presentation.navigation.Screen
 
 @Composable

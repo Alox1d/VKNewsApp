@@ -18,17 +18,18 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
 import ru.alox1d.vknewsapp.data.network.ApiFactory
-import ru.alox1d.vknewsapp.domain.AuthState
-import ru.alox1d.vknewsapp.domain.FeedPost
-import ru.alox1d.vknewsapp.domain.NewsFeedResult
-import ru.alox1d.vknewsapp.domain.PostComment
-import ru.alox1d.vknewsapp.domain.StatisticItem
-import ru.alox1d.vknewsapp.domain.StatisticType
+import ru.alox1d.vknewsapp.domain.entity.AuthState
+import ru.alox1d.vknewsapp.domain.entity.FeedPost
+import ru.alox1d.vknewsapp.domain.entity.NewsFeedResult
+import ru.alox1d.vknewsapp.domain.entity.PostComment
+import ru.alox1d.vknewsapp.domain.entity.StatisticItem
+import ru.alox1d.vknewsapp.domain.entity.StatisticType
+import ru.alox1d.vknewsapp.domain.repository.NewsFeedRepository
 import ru.alox1d.vknewsapp.extensions.mergeWith
 import ru.alox1d.vknewsapp.presentation.main.DataStore.prefsAccessTokenKey
 import ru.alox1d.vknewsapp.presentation.main.appDataStore
 
-class NewsFeedRepository(application: Application) {
+class NewsFeedRepositoryImpl(application: Application) : NewsFeedRepository {
     private val dataStore = application.applicationContext.appDataStore
     private val apiService = ApiFactory.apiService
     private val mapper = NewsFeedMapper()
@@ -41,7 +42,7 @@ class NewsFeedRepository(application: Application) {
     private var nextFrom: String? = null
 
     private val checkAuthStateEvents = MutableSharedFlow<Unit>(replay = 1)
-    val authStateFlow = flow {
+    override val authStateFlow = flow {
         checkAuthStateEvents.emit(Unit) // чтобы отработал 1-ый эмит
         checkAuthStateEvents.collect {
             val token = getAccessToken()
@@ -101,7 +102,7 @@ class NewsFeedRepository(application: Application) {
             emit(NewsFeedResult.Error)
         }
 
-    val recommendations: StateFlow<NewsFeedResult> =
+    override val recommendations: StateFlow<NewsFeedResult> =
         loadedListFlow
             .mergeWith(refreshedListFlow)
             .stateIn(
@@ -110,11 +111,11 @@ class NewsFeedRepository(application: Application) {
                 initialValue = NewsFeedResult.Success(feedPosts)
             )
 
-    suspend fun loadNextData() {
+    override suspend fun loadNextData() {
         nextDataNeededEvents.emit(Unit)
     }
 
-    fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow {
+    override fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow {
         val comments = apiService.getComments(
             accessToken = getAccessToken() ?: throw IllegalStateException("AT is null"),
             ownerId = feedPost.communityId,
@@ -126,7 +127,7 @@ class NewsFeedRepository(application: Application) {
         true
     }
 
-    suspend fun changeLikeStatus(feedPost: FeedPost) {
+    override suspend fun changeLikeStatus(feedPost: FeedPost) {
         val response = if (feedPost.isLiked) {
             apiService.deleteLike(
                 token = getAccessToken() ?: throw IllegalStateException("AT is null"),
@@ -160,7 +161,7 @@ class NewsFeedRepository(application: Application) {
         refreshedListFlow.emit(NewsFeedResult.Success(feedPosts))
     }
 
-    suspend fun deletePost(feedPost: FeedPost) {
+    override suspend fun deletePost(feedPost: FeedPost) {
         apiService.ignorePost(
             token = getAccessToken() ?: throw IllegalStateException("AT is null"),
             ownerId = feedPost.communityId,
@@ -170,20 +171,13 @@ class NewsFeedRepository(application: Application) {
         refreshedListFlow.emit(NewsFeedResult.Success(feedPosts))
     }
 
-    private suspend fun getAccessToken(): String? {
+    override suspend fun getAccessToken(): String? {
         return dataStore.data.firstOrNull()?.get(prefsAccessTokenKey)
     }
 
-    suspend fun onLoginSuccess(token: String) {
+    override suspend fun updateAuthState(token: String?) {
         dataStore.edit { prefs ->
-            prefs[prefsAccessTokenKey] = token
-        }
-        checkAuthStateEvents.emit(Unit)
-    }
-
-    suspend fun onLoginError() {
-        dataStore.edit { prefs ->
-            prefs[prefsAccessTokenKey] = ""
+            prefs[prefsAccessTokenKey] = token ?: ""
         }
         checkAuthStateEvents.emit(Unit)
     }

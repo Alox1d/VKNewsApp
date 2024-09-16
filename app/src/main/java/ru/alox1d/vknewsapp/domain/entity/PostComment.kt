@@ -1,4 +1,4 @@
-package ru.alox1d.vknewsapp.domain
+package ru.alox1d.vknewsapp.domain.entity
 
 data class PostComment(
     val id: Long,

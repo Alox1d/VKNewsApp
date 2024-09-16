@@ -31,9 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.alox1d.vknewsapp.R
-import ru.alox1d.vknewsapp.domain.FeedPost
-import ru.alox1d.vknewsapp.domain.StatisticItem
-import ru.alox1d.vknewsapp.domain.StatisticType
+import ru.alox1d.vknewsapp.domain.entity.FeedPost
+import ru.alox1d.vknewsapp.domain.entity.StatisticItem
+import ru.alox1d.vknewsapp.domain.entity.StatisticType
 import ru.alox1d.vknewsapp.presentation.ui.theme.VKNewsAppTheme
 
 @Composable

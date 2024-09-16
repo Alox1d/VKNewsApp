@@ -1,7 +1,7 @@
 package ru.alox1d.vknewsapp.presentation.comments
 
-import ru.alox1d.vknewsapp.domain.FeedPost
-import ru.alox1d.vknewsapp.domain.PostComment
+import ru.alox1d.vknewsapp.domain.entity.FeedPost
+import ru.alox1d.vknewsapp.domain.entity.PostComment
 
 sealed class CommentsScreenState {
     data object Initial : CommentsScreenState()

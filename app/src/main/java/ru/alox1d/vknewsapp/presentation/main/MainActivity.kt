@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.alox1d.vknewsapp.domain.AuthState
+import ru.alox1d.vknewsapp.domain.entity.AuthState
 import ru.alox1d.vknewsapp.presentation.ui.theme.VKNewsAppTheme
 
 class MainActivity : ComponentActivity() {
