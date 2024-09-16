@@ -50,7 +50,7 @@ class NewsFeedRepository(application: Application) {
                 "checkAuth",
                 "some secret: $token"
             )
-            val state = if (token.isNotEmpty()) {
+            val state = if (token?.isNotEmpty() == true) {
                 AuthState.Authorized
             } else {
                 AuthState.NotAuthorized
@@ -70,6 +70,7 @@ class NewsFeedRepository(application: Application) {
     private val loadedListFlow = flow {
         nextDataNeededEvents.emit(Unit)
         nextDataNeededEvents.collect {
+            val token = getAccessToken() ?: throw IllegalStateException("AT is null")
             val startFrom = nextFrom
 
             if (startFrom == null && feedPosts.isNotEmpty()) {
@@ -78,10 +79,10 @@ class NewsFeedRepository(application: Application) {
             }
 
             val response = if (startFrom == null) {
-                apiService.loadRecommendations(getAccessToken())
+                apiService.loadRecommendations(token)
             } else {
                 apiService.loadRecommendations(
-                    token = getAccessToken(),
+                    token = token,
                     startFrom = startFrom
                 )
             }
@@ -115,7 +116,7 @@ class NewsFeedRepository(application: Application) {
 
     fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow {
         val comments = apiService.getComments(
-            accessToken = getAccessToken(),
+            accessToken = getAccessToken() ?: throw IllegalStateException("AT is null"),
             ownerId = feedPost.communityId,
             postId = feedPost.id
         )
@@ -128,13 +129,13 @@ class NewsFeedRepository(application: Application) {
     suspend fun changeLikeStatus(feedPost: FeedPost) {
         val response = if (feedPost.isLiked) {
             apiService.deleteLike(
-                token = getAccessToken(),
+                token = getAccessToken() ?: throw IllegalStateException("AT is null"),
                 ownerId = feedPost.communityId,
                 postId = feedPost.id
             )
         } else {
             apiService.addLike(
-                token = getAccessToken(),
+                token = getAccessToken() ?: throw IllegalStateException("AT is null"),
                 ownerId = feedPost.communityId,
                 postId = feedPost.id
             )
@@ -161,7 +162,7 @@ class NewsFeedRepository(application: Application) {
 
     suspend fun deletePost(feedPost: FeedPost) {
         apiService.ignorePost(
-            token = getAccessToken(),
+            token = getAccessToken() ?: throw IllegalStateException("AT is null"),
             ownerId = feedPost.communityId,
             postId = feedPost.id,
         )
@@ -169,9 +170,8 @@ class NewsFeedRepository(application: Application) {
         refreshedListFlow.emit(NewsFeedResult.Success(feedPosts))
     }
 
-    private suspend fun getAccessToken(): String {
-        return dataStore.data.firstOrNull()
-            ?.get(prefsAccessTokenKey) ?: throw IllegalStateException("AT is null")
+    private suspend fun getAccessToken(): String? {
+        return dataStore.data.firstOrNull()?.get(prefsAccessTokenKey)
     }
 
     suspend fun onLoginSuccess(token: String) {
