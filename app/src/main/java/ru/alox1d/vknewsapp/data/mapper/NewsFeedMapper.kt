@@ -9,9 +9,10 @@ import ru.alox1d.vknewsapp.domain.entity.StatisticType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 import kotlin.math.absoluteValue
 
-class NewsFeedMapper {
+class NewsFeedMapper @Inject constructor() {
 
     fun mapDtoToDomain(responseDto: NewsFeedResponseDto): List<FeedPost> {
         val result = mutableListOf<FeedPost>()

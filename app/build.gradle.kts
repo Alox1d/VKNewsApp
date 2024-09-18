@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-parcelize")
+    id("kotlin-kapt")
     id("vkid.placeholders")
 }
 
@@ -70,6 +71,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
 

@@ -1,9 +1,8 @@
 package ru.alox1d.vknewsapp.presentation.main
 
-import android.app.Application
 import android.content.Context
 import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk.id.AccessToken
 import com.vk.id.OAuth
@@ -11,18 +10,17 @@ import com.vk.id.VKIDAuthFail
 import com.vk.id.onetap.common.OneTapOAuth
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.alox1d.vknewsapp.data.repository.NewsFeedRepositoryImpl
 import ru.alox1d.vknewsapp.domain.entity.AuthState
 import ru.alox1d.vknewsapp.domain.formatToken
 import ru.alox1d.vknewsapp.domain.usecases.GetAuthStateFlowUseCase
 import ru.alox1d.vknewsapp.domain.usecases.UpdateAuthStateFlowUseCase
+import javax.inject.Inject
 
-class MainViewModel(private val application: Application) : AndroidViewModel(application) {
+class MainViewModel @Inject constructor(
+    private val getAuthStateFlowUseCase: GetAuthStateFlowUseCase,
+    private val updateAuthStateFlowUseCase: UpdateAuthStateFlowUseCase
+) : ViewModel() {
 
-    private val repository = NewsFeedRepositoryImpl(application)
-
-    private val getAuthStateFlowUseCase = GetAuthStateFlowUseCase(repository)
-    private val updateAuthStateFlowUseCase = UpdateAuthStateFlowUseCase(repository)
 
     val authState: StateFlow<AuthState> = getAuthStateFlowUseCase.invoke()
 
@@ -34,11 +32,11 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             updateAuthStateFlowUseCase.invoke(at.token)
         }
 
-        onVKIDAuthSuccess(
-            application,
-            oAuth?.toOAuth(),
-            at
-        )
+//        onVKIDAuthSuccess(
+//            application,
+//            oAuth?.toOAuth(),
+//            at
+//        )
     }
 
     fun onLoginError(): (OneTapOAuth?, VKIDAuthFail) -> Unit = { oAuth, fail ->
@@ -46,11 +44,11 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             updateAuthStateFlowUseCase.invoke(null)
         }
 
-        onVKIDAuthFail(
-            application,
-            oAuth?.toOAuth(),
-            fail
-        )
+//        onVKIDAuthFail(
+//            application,
+//            oAuth?.toOAuth(),
+//            fail
+//        )
     }
 
     private fun onVKIDAuthSuccess(

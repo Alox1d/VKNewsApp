@@ -22,6 +22,8 @@ binary-compatibility-validator = "0.14.0"
 coil = "2.5.0"
 coilCompose = "2.1.0"
 converterGson = "2.9.0"
+dagger = "2.51.1"
+daggerCompiler = "2.51.1"
 datastore = "1.1.1"
 datastorePreferences = "1.1.1"
 detekt = "1.23.5"
@@ -83,6 +85,8 @@ coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-compose-v210 = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerCompiler" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kaspresso = { group = "com.kaspersky.android-components", name = "kaspresso", version.ref = "kaspresso" }
 kaspresso-compose = { group = "com.kaspersky.android-components", name = "kaspresso-compose-support", version.ref = "kaspresso" }

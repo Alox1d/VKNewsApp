@@ -1,7 +1,8 @@
 package ru.alox1d.vknewsapp.data.repository
 
-import android.app.Application
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.alox1d.vknewsapp.data.mapper.NewsFeedMapper
-import ru.alox1d.vknewsapp.data.network.ApiFactory
+import ru.alox1d.vknewsapp.data.network.ApiService
 import ru.alox1d.vknewsapp.domain.entity.AuthState
 import ru.alox1d.vknewsapp.domain.entity.FeedPost
 import ru.alox1d.vknewsapp.domain.entity.NewsFeedResult
@@ -27,12 +28,14 @@ import ru.alox1d.vknewsapp.domain.entity.StatisticType
 import ru.alox1d.vknewsapp.domain.repository.NewsFeedRepository
 import ru.alox1d.vknewsapp.extensions.mergeWith
 import ru.alox1d.vknewsapp.presentation.main.DataStore.prefsAccessTokenKey
-import ru.alox1d.vknewsapp.presentation.main.appDataStore
+import javax.inject.Inject
 
-class NewsFeedRepositoryImpl(application: Application) : NewsFeedRepository {
-    private val dataStore = application.applicationContext.appDataStore
-    private val apiService = ApiFactory.apiService
-    private val mapper = NewsFeedMapper()
+class NewsFeedRepositoryImpl @Inject constructor(
+    private val dataStore: DataStore<Preferences>,
+    private val apiService: ApiService,
+    private val mapper: NewsFeedMapper,
+) : NewsFeedRepository {
+
     private val coroutinesScope = CoroutineScope(Dispatchers.Default)
 
     private val _feedPosts = mutableListOf<FeedPost>()

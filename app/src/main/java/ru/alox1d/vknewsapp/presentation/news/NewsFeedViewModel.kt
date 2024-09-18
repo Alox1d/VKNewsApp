@@ -1,8 +1,7 @@
 package ru.alox1d.vknewsapp.presentation.news
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -11,7 +10,6 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import ru.alox1d.vknewsapp.data.repository.NewsFeedRepositoryImpl
 import ru.alox1d.vknewsapp.domain.entity.FeedPost
 import ru.alox1d.vknewsapp.domain.entity.NewsFeedResult
 import ru.alox1d.vknewsapp.domain.usecases.ChangeLikeStatusUseCase
@@ -19,18 +17,18 @@ import ru.alox1d.vknewsapp.domain.usecases.DeletePostUseCase
 import ru.alox1d.vknewsapp.domain.usecases.GetRecommendationsUseCase
 import ru.alox1d.vknewsapp.domain.usecases.LoadNextDataUseCase
 import ru.alox1d.vknewsapp.extensions.mergeWith
+import javax.inject.Inject
 
-class NewsFeedViewModel(private val application: Application) : AndroidViewModel(application) {
+class NewsFeedViewModel @Inject constructor(
+    private val getRecommendationsUseCase: GetRecommendationsUseCase,
+    private val loadNextDataUseCase: LoadNextDataUseCase,
+    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
+    private val deletePostUseCase: DeletePostUseCase,
+) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
         Log.d("NewsFeedViewModel", "Exception in NewsFeedViewModel: ")
     }
-    private val repository = NewsFeedRepositoryImpl(application)
-
-    private val getRecommendationsUseCase = GetRecommendationsUseCase(repository)
-    private val loadNextDataUseCase = LoadNextDataUseCase(repository)
-    private val changeLikeStatusUseCase = ChangeLikeStatusUseCase(repository)
-    private val deletePostUseCase = DeletePostUseCase(repository)
 
     private val recommendationsFlow = getRecommendationsUseCase.invoke()
     private val loadNextDataFlow = MutableSharedFlow<NewsFeedScreenState>()
