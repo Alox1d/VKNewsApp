@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,16 +36,20 @@ import coil.compose.AsyncImage
 import ru.alox1d.vknewsapp.R
 import ru.alox1d.vknewsapp.domain.entity.FeedPost
 import ru.alox1d.vknewsapp.domain.entity.PostComment
-import ru.alox1d.vknewsapp.presentation.ViewModelFactory
+import ru.alox1d.vknewsapp.presentation.NewsFeedApplication
 import ru.alox1d.vknewsapp.presentation.ui.theme.VKNewsAppTheme
 
 @Composable
 fun CommentsScreen(
     onBackPressed: () -> Unit,
     feedPost: FeedPost,
-    viewModelFactory: ViewModelFactory,
 ) {
-    val viewModel: CommentsViewModel = viewModel(factory = viewModelFactory)
+    val component = (LocalContext.current.applicationContext as NewsFeedApplication)
+        .component
+        .getCommentsScreenComponentFactory()
+        .create(feedPost)
+
+    val viewModel: CommentsViewModel = viewModel(factory = component.getViewModelFactory())
     val screenState = viewModel.screenState.collectAsState(CommentsScreenState.Initial)
 
     when (val currentState = screenState.value) {
