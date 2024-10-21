@@ -2,10 +2,12 @@ package ru.alox1d.vknewsapp.domain.entity
 
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import androidx.navigation.NavType
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class FeedPost(
     val id: Long,
@@ -15,7 +17,7 @@ data class FeedPost(
     val communityImageUrl: String,
     val contextText: String,
     val contentImageUrl: String?,
-    val statistics: List<StatisticItem>,
+    val statistics: List<StatisticItem>, // при изменении этой коллекции рекомпозиции НЕ произойдёт из-за immutable
     val isLiked: Boolean,
 ) : Parcelable {
 

@@ -3,7 +3,6 @@ package ru.alox1d.vknewsapp.presentation.news
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,43 +17,52 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.alox1d.vknewsapp.domain.entity.FeedPost
-import ru.alox1d.vknewsapp.presentation.ViewModelFactory
+import ru.alox1d.vknewsapp.presentation.getApplicationComponent
 import ru.alox1d.vknewsapp.presentation.ui.theme.Blue
 
 @Composable
 fun NewsFeedScreen(
-    viewModelFactory: ViewModelFactory,
     paddingValues: PaddingValues,
     onCommentsClick: (FeedPost) -> Unit,
 ) {
+    val component = getApplicationComponent()
     val viewModel: NewsFeedViewModel =
-        viewModel(factory = viewModelFactory) // = ViewModelProvider(LocalViewModelStoreOwner.current!!)[NewsFeedViewModel::class.java]
+        viewModel(factory = component.getViewModelFactory()) // = ViewModelProvider(LocalViewModelStoreOwner.current!!)[NewsFeedViewModel::class.java]
     val screenState = viewModel.screenState.collectAsState(NewsFeedScreenState.Initial)
 
-    Column {
-        when (val currentState = screenState.value) {
-            is NewsFeedScreenState.Posts -> FeedPosts(
-                posts = currentState.posts,
-                viewModel = viewModel,
-                paddingValues = paddingValues,
-                onCommentsClick = onCommentsClick,
-                nextDataIsLoading = currentState.nextDataIsLoading
-            )
+    NewsFeedContent(screenState, viewModel, paddingValues, onCommentsClick)
+}
 
-            NewsFeedScreenState.Initial -> Unit // do nothing on init state
-            NewsFeedScreenState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = Blue)
-                }
+@Composable
+private fun NewsFeedContent(
+    screenState: State<NewsFeedScreenState>,
+    viewModel: NewsFeedViewModel,
+    paddingValues: PaddingValues,
+    onCommentsClick: (FeedPost) -> Unit
+) {
+    when (val currentState = screenState.value) {
+        is NewsFeedScreenState.Posts -> FeedPosts(
+            posts = currentState.posts,
+            viewModel = viewModel,
+            paddingValues = paddingValues,
+            onCommentsClick = onCommentsClick,
+            nextDataIsLoading = currentState.nextDataIsLoading
+        )
+
+        NewsFeedScreenState.Initial -> Unit // do nothing on init state
+        NewsFeedScreenState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Blue)
             }
         }
     }

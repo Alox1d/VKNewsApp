@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import ru.alox1d.vknewsapp.presentation.ViewModelFactory
 import ru.alox1d.vknewsapp.presentation.comments.CommentsScreen
 import ru.alox1d.vknewsapp.presentation.navigation.NavigationState
 import ru.alox1d.vknewsapp.presentation.navigation.navgraph.AppNavGraph
@@ -28,7 +27,7 @@ import ru.alox1d.vknewsapp.presentation.navigation.rememberNavigationState
 import ru.alox1d.vknewsapp.presentation.news.NewsFeedScreen
 
 @Composable
-fun MainScreen(viewModelFactory: ViewModelFactory) {
+fun MainScreen() {
     val navigationState = rememberNavigationState()
 
     Scaffold(
@@ -46,7 +45,6 @@ fun MainScreen(viewModelFactory: ViewModelFactory) {
             navHostController = navigationState.navHostController,
             newsFeedContent = {
                 NewsFeedScreen(
-                    viewModelFactory,
                     paddingValues = paddingValues,
                     onCommentsClick = {
                         navigationState.navigateToComments(it)

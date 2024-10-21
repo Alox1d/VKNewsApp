@@ -3,7 +3,7 @@ package ru.alox1d.vknewsapp.di
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import ru.alox1d.vknewsapp.presentation.main.MainActivity
+import ru.alox1d.vknewsapp.presentation.ViewModelFactory
 
 @ApplicationScope
 @Component(
@@ -15,7 +15,7 @@ import ru.alox1d.vknewsapp.presentation.main.MainActivity
 )
 interface ApplicationComponent {
 
-    fun inject(activity: MainActivity)
+    fun getViewModelFactory(): ViewModelFactory
 
     fun getCommentsScreenComponentFactory(): CommentsScreenComponent.Factory
 
