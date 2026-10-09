@@ -1,6 +1,5 @@
 package ru.alox1d.vknewsapp.data.repository
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -50,10 +49,6 @@ class NewsFeedRepositoryImpl @Inject constructor(
         checkAuthStateEvents.collect {
             val token = getAccessToken()
 
-            Log.d(
-                "checkAuth",
-                "some secret: $token"
-            )
             val state = if (token?.isNotEmpty() == true) {
                 AuthState.Authorized
             } else {
