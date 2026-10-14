@@ -1,36 +1,23 @@
 # VKNewsApp
 
-VKNewsApp — Android-приложение для просмотра новостной ленты ВКонтакте.  
-Основная идея проекта — показать работу с VK API, построение ленты новостей и организацию кода в современном Android-стеке на Kotlin.
+A course-based Android learning project for browsing the VK news feed. It explores VK API integration, news-feed pagination and a layered Kotlin application.
 
-## 📱 Основные возможности
+## Features
 
-- Просмотр новостной ленты ВКонтакте
-- Отображение основной информации по посту:
-  - автор / сообщество
-  - дата публикации
-  - текст и вложения (по возможности)
-  - счётчики лайков / комментариев / репостов / просмотров
-- Подгрузка следующих порций новостей при скролле (пагинация)
-- Базовая обработка ошибок сети (пустые состояния / повтор запроса)
+- Browse the news feed.
+- Display post authors, publication dates, text and available attachments.
+- Display like, comment, repost and view counters.
+- Load the next page of posts while scrolling.
 
----
+## Stack
 
-## 🧰 Технический стек
+- Kotlin and Gradle Kotlin DSL.
+- Jetpack Compose and Material 3.
+- Data, domain and presentation layers with MVVM.
+- Dagger for dependency injection.
+- Kotlin Coroutines and Flow.
+- VK ID SDK and VK SDK.
+- Retrofit/OkHttp and Gson for network requests and JSON conversion.
+- DataStore for local preferences and Coil for images.
 
-Проект написан полностью на **Kotlin** и собран с помощью **Gradle (KTS)**.
-
-Типичный стек (скорректируй под свои зависимости):
-
-- Язык: **Kotlin**
-- Архитектура: разделение на слои `data / domain / presentation` (чистая архитектура / MVVM)
-- DI: *Dagger2*
-- Работа с сетью:
-  - **Retrofit / OkHttp** для запросов к VK API
-  - **Gson** для парсинга JSON
-- Асинхронщина:
-  - **Kotlin Coroutines / Flow**
-- UI:
-  - **Jetpack Compose** 
-  - **Material Design** компоненты
-
+This is a learning project. The original contributor history is preserved in the repository.
